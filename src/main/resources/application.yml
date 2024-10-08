@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/mailing_service
+    username: postgres
+    password: 1111
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

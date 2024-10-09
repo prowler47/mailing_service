@@ -12,7 +12,12 @@ public class TestCheckNotificationsService implements CheckNotifications {
     private TestPayloadDao testPayloadDao;
 
     @Override
-    public void checkNotifications() {
+    public void checkNotificationsForSend() {
         testPayloadDao.addNewTimerTestEntity();
+    }
+
+    @Override
+    public void checkNotificationsForDelete() {
+
     }
 }

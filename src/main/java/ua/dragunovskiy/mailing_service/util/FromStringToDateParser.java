@@ -14,7 +14,7 @@ public class FromStringToDateParser {
 
         String[] splitDate = date.split("-");
         var year = splitDate[0];
-        var month = splitDate[1];
+        var month = Integer.parseInt(splitDate[1]) - 1;
         var day = splitDate[2];
 
         String[] splitTime = time.split(":");
@@ -23,7 +23,7 @@ public class FromStringToDateParser {
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, Integer.parseInt(year));
-        calendar.set(Calendar.MONTH, Integer.parseInt(month));
+        calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hours));
         calendar.set(Calendar.MINUTE, Integer.parseInt(minutes));
@@ -38,6 +38,19 @@ public class FromStringToDateParser {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hours));
         calendar.set(Calendar.MINUTE, Integer.parseInt(minutes));
+        return calendar.getTime();
+    }
+
+    public Date parseDateWithoutTime(String date) {
+        String[] splitDate = date.split("-");
+        String year = splitDate[0];
+        int month = Integer.parseInt(splitDate[1]) - 1;
+        String day = splitDate[2];
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, Integer.parseInt(year));
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
         return calendar.getTime();
     }
 }

@@ -22,7 +22,7 @@ public class FilterNotifications implements Filter<Notification> {
         List<Notification> notificationList = notificationDao.getAll();
         List<Notification> filteredNotifications = new ArrayList<>();
         for (Notification notification : notificationList) {
-            if (DateComparator.compareDate(notification, period)) {
+            if (DateComparator.compareActualDate(notification, period)) {
                 filteredNotifications.add(notification);
             }
         }

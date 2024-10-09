@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
+import ua.dragunovskiy.mailing_service.timemechanism.DateComparator;
 import ua.dragunovskiy.mailing_service.timemechanism.check.TestCheckNotificationsService;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.FilterNotifications;
 import ua.dragunovskiy.mailing_service.timemechanism.timer.TimerForTask;
@@ -56,5 +57,17 @@ public class TestController {
     @GetMapping("/filterNotifications")
     public List<Notification> getListOfNotificationsForSend() {
        return filterNotifications.filter();
+    }
+
+    @GetMapping("/compareTest")
+    public String getOverdueCompare() {
+        Notification notification = new Notification();
+        notification.setTitle("test");
+        notification.setPayload("test");
+        notification.setDate("2024-10-09 10:23");
+        if (DateComparator.compareOverdueDate(notification)) {
+            System.out.println("need to delete");
+        } else System.out.println("nothing to delete");
+        return null;
     }
 }

@@ -18,7 +18,7 @@ public class TimerForTask {
             @Override
             public void run() {
                 System.out.println("Output every " + seconds + " seconds for testing");
-                checkNotificationsService.checkNotifications();
+                checkNotificationsService.checkNotificationsForSend();
             }
         }, 0, seconds);
     }

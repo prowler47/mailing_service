@@ -1,4 +1,4 @@
-package ua.dragunovskiy.mailing_service.timemechanism;
+package ua.dragunovskiy.mailing_service.timemechanism.comparator;
 
 import lombok.experimental.UtilityClass;
 import ua.dragunovskiy.mailing_service.entity.Notification;

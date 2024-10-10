@@ -1,12 +1,12 @@
 package ua.dragunovskiy.mailing_service.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
-import ua.dragunovskiy.mailing_service.timemechanism.DateComparator;
-import ua.dragunovskiy.mailing_service.timemechanism.check.TestCheckNotificationsService;
-import ua.dragunovskiy.mailing_service.timemechanism.filter.FilterNotifications;
+import ua.dragunovskiy.mailing_service.timemechanism.check.SimpleCheckNotifications;
+import ua.dragunovskiy.mailing_service.timemechanism.comparator.DateComparator;
+import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
 import ua.dragunovskiy.mailing_service.timemechanism.timer.TimerForTask;
 
 import java.text.ParseException;
@@ -16,16 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/test")
+@RequiredArgsConstructor
 public class TestController {
 
-    @Autowired
-    private TestCheckNotificationsService testCheckNotificationsService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private FilterNotifications filterNotifications;
+    private final SimpleCheckNotifications simpleCheckNotifications;
+    private final NotificationService notificationService;
+    private final SimpleFilterNotifications simpleFilterNotifications;
 
     @GetMapping("/hello")
     public String sayHello() {
@@ -34,7 +30,7 @@ public class TestController {
 
     @GetMapping("/timerTest")
     public void testTimer() {
-        TimerForTask.checkInTime(5000, testCheckNotificationsService);
+        new TimerForTask(simpleFilterNotifications).checkInTime(5000, simpleCheckNotifications);
     }
 
     @PostMapping("/addNotification")
@@ -56,7 +52,7 @@ public class TestController {
 
     @GetMapping("/filterNotifications")
     public List<Notification> getListOfNotificationsForSend() {
-       return filterNotifications.filter();
+        return simpleFilterNotifications.filterForSending();
     }
 
     @GetMapping("/compareTest")

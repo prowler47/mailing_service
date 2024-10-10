@@ -1,24 +1,25 @@
 package ua.dragunovskiy.mailing_service.timemechanism.filter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ua.dragunovskiy.mailing_service.dao.NotificationDao;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.timemechanism.DateComparator;
+import ua.dragunovskiy.mailing_service.service.NotificationService;
+import ua.dragunovskiy.mailing_service.timemechanism.comparator.DateComparator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class FilterNotifications implements Filter<Notification> {
+@RequiredArgsConstructor
+public class SimpleFilterNotifications implements Filter<Notification> {
 
-    @Autowired
-    private NotificationDao notificationDao;
-
+    private final NotificationDao notificationDao;
+    private final NotificationService notificationService;
     private final int period = 59;
 
     // it's a filter to select only notifications with specified date of sending
     @Override
-    public List<Notification> filter() {
+    public List<Notification> filterForSending() {
         List<Notification> notificationList = notificationDao.getAll();
         List<Notification> filteredNotifications = new ArrayList<>();
         for (Notification notification : notificationList) {
@@ -27,5 +28,15 @@ public class FilterNotifications implements Filter<Notification> {
             }
         }
         return filteredNotifications;
+    }
+
+    @Override
+    public void filterForDelete() {
+        List<Notification> notificationList = notificationDao.getAll();
+        for (Notification notification : notificationList) {
+            if (DateComparator.compareOverdueDate(notification)) {
+                notificationService.deleteNotification(notification.getId());
+            }
+        }
     }
 }

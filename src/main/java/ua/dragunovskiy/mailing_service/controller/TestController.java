@@ -3,11 +3,12 @@ package ua.dragunovskiy.mailing_service.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.sender.SenderType;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
 import ua.dragunovskiy.mailing_service.timemechanism.check.SimpleCheckNotifications;
 import ua.dragunovskiy.mailing_service.timemechanism.comparator.DateComparator;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
-import ua.dragunovskiy.mailing_service.timemechanism.timer.TimerForTask;
+import ua.dragunovskiy.mailing_service.timemechanism.timer.TaskByTimer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ public class TestController {
     private final SimpleCheckNotifications simpleCheckNotifications;
     private final NotificationService notificationService;
     private final SimpleFilterNotifications simpleFilterNotifications;
+    private final List<SenderType> senderTypes = List.of(SenderType.MAIL, SenderType.TELEGRAM, SenderType.VIBER);
 
     @GetMapping("/hello")
     public String sayHello() {
@@ -30,7 +32,8 @@ public class TestController {
 
     @GetMapping("/timerTest")
     public void testTimer() {
-        new TimerForTask(simpleFilterNotifications).checkInTime(5000, simpleCheckNotifications);
+//        new TimerForTask(simpleFilterNotifications, simpleCheckNotifications).checkInTime(5000, simpleCheckNotifications);
+        new TaskByTimer(simpleFilterNotifications).checkInTimeWithSenderTypes(5000, simpleCheckNotifications, senderTypes);
     }
 
     @PostMapping("/addNotification")

@@ -20,6 +20,9 @@ public class Notification {
     @Column(name = "id")
     private UUID id;
 
+    @Column(name = "address")
+    private String address;
+
     @Column(name = "title")
     private String title;
 

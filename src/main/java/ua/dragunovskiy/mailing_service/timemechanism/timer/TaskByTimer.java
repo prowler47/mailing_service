@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ua.dragunovskiy.mailing_service.sender.SenderType;
 import ua.dragunovskiy.mailing_service.timemechanism.check.CheckNotifications;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
+import ua.dragunovskiy.mailing_service.util.Time;
 
 import java.util.List;
 import java.util.Timer;
@@ -35,6 +36,7 @@ public class TaskByTimer {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                System.out.println("checkInTimeWithSenderTypes update every 3 minutes... - " + Time.getCurrentTime());
                 checkNotifications.checkNotificationsForSendWithSenderTypes(filter, senderTypes);
             }
         }, 0, intervalInMilliSeconds);

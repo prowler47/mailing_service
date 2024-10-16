@@ -66,13 +66,13 @@
           * *chooseSender* - method for set some sender. It takes SenderType
       and return one of Sender implementations
     * Sender - common interface for all senders
-        * send - method for send some message to client
+        * *send* - method for send some message to client
     * MailSender - implementation of Sender for work with email
-      * send - send message to email
+      * *send* - send message to email
     * TelegramSender - implementation of Sender for work with Telegram
-        * send - send message to Telegram
+        * *send* - send message to Telegram
     * ViberSender - implementation of Sender for work with Viber
-        * send - send message to Viber
+        * *send* - send message to Viber
     * SenderType - enum with all kinds of senders names
 * ***service***
     * NotificationService - service layer for working with notifications
@@ -103,6 +103,33 @@
         another cases it return false
          * *compareOverdueDate* - compare date from notification and actual date. It return true
         It return true is notification date is overdue and it need to delete from DB
+    * ***filter***
+        * Filter - common interface for filters. It filter only notifications
+  for send and notifications for delete
+          * *filterForSending* - method for filter only notifications
+      for sending
+          * *filterForDelete* - method for filter only notifications
+      for delete
+      * SimpleFilterNotifications - the simplest implementation of Filter.
+  It override methods from Filter as default behavior
+    * ***timer***
+        * TaskByTimer - class for performance of the task with some time
+  interval
+          * *checkInTime* - do task with some time interval
+          * *checkInTimeWithSenderTypes* - do task with some time interval and
+      it set one o more of SenderTypes
+* ***util***
+    * FromStringToDateParser - utility class contains methods for parsing 
+  Date from String
+      * *parse* - parse whole Date from String
+      * *parseTime* - parse only part with hours and minutes but without year and month
+      * *parseDateWithoutTime* - parse only part with year and month but without 
+      hours and minutes
+    * PrintNotificationToConsole - utility class to print notification
+  information to console
+      * *printNotificationToConsole* - print id, title, payload and date from
+      notification to console
+  
           
   
 

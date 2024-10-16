@@ -8,4 +8,9 @@ public class ViberSender implements Sender {
     public void send(String address, String subject, String message) {
         System.out.println("Viber sender is working...message from notification is: " + message);
     }
+
+    @Override
+    public String getType() {
+        return "viberSender";
+    }
 }

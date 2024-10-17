@@ -3,12 +3,10 @@ package ua.dragunovskiy.mailing_service.timemechanism.check;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.sender.Sender;
 import ua.dragunovskiy.mailing_service.sender.SenderType;
-import ua.dragunovskiy.mailing_service.sender.senderutil.ChooseSender;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.Filter;
 import ua.dragunovskiy.mailing_service.timemechanism.timer.SenderByTime;
-import ua.dragunovskiy.mailing_service.util.PrintNotificationToConsole;
+import ua.dragunovskiy.mailing_service.util.NotificationToConsolePrinter;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class SimpleCheckNotifications implements CheckNotifications {
     public void checkNotificationsForSend(Filter<Notification> filter) {
         List<Notification> filteredForSendingList = filter.filterForSending();
         for (Notification notification : filteredForSendingList) {
-            PrintNotificationToConsole.printNotificationToConsole(notification);
+            NotificationToConsolePrinter.printNotificationToConsole(notification);
         }
     }
 

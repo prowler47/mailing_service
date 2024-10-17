@@ -34,9 +34,11 @@
       * SimpleFilterNotifications
     * **timer**
       * TaskByTimer
+      * SenderByTime
 * **util**
     * FromStringToDateParser
-    * PrintNotificationToConsole
+    * NotificationToConsolePrinter
+    * Time
 * MailingServiceNotification
 
 ***
@@ -113,11 +115,26 @@
       * SimpleFilterNotifications - the simplest implementation of Filter.
   It override methods from Filter as default behavior
     * ***timer***
-        * TaskByTimer - class for performance of the task with some time
+      * TaskByTimer - class for performance of the task with some time
   interval
-          * *checkInTime* - do task with some time interval
-          * *checkInTimeWithSenderTypes* - do task with some time interval and
-      it set one o more of SenderTypes
+        * *checkInTime* - do task with some time interval
+        * *checkInTimeWithSenderTypes* - do task with some time interval and
+    it set one o more of SenderTypes
+      * SenderByTime - speciality class for sending notification by time
+          * *sendNotificationByTime* - send notification with some time interval. 
+            * 1. It check if notification date equals with current date.
+            * 2. If notification is ready to send it send it and put given notification
+        to speciality list for already sending notifications for clear it after a while
+          * *sendNotificationAndDistributeNotificationForSentLists* - it call method *send* from Sender and
+        distribute sent notifications by sent lists with method *notificationSenderDistribute*
+          * *timeChecker* - check if notification time (hours and minutes) equals
+        with current date time (hours and minutes)
+          * *notificationSenderDistribute* - distribute sent notifications by lists of sent
+        notifications
+          * *clearSentLists* - it clear lists for already sent notifications
+          * *separateTimeFromDate* - separate only hours and minutes from date
+          * *filterToClear* - return list of only ready to delete notifications
+        by date
 * ***util***
     * FromStringToDateParser - utility class contains methods for parsing 
   Date from String
@@ -129,6 +146,11 @@
   information to console
       * *printNotificationToConsole* - print id, title, payload and date from
       notification to console
+    * Time - utility class for working with date
+      * *getCurrentTime* - return current time as String in "yyyy-MM-dd HH:mm" format
+      * *timeComparator* - compare current date (only hours and minutes) and
+      date (hours and minutes) from notification. It return true only if current time
+      more than notification time no less then 2 minutes
   
           
   

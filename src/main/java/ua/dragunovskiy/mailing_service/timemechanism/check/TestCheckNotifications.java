@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.sender.SenderType;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.Filter;
-import ua.dragunovskiy.mailing_service.util.PrintNotificationToConsole;
+import ua.dragunovskiy.mailing_service.util.NotificationToConsolePrinter;
 import java.util.List;
 
 // it's implementation of CheckNotifications just for testing call
@@ -15,7 +15,7 @@ public class TestCheckNotifications implements CheckNotifications {
     public void checkNotificationsForSend(Filter<Notification> filter) {
         List<Notification> filteredForSendingList = filter.filterForSending();
         for (Notification notification : filteredForSendingList) {
-            PrintNotificationToConsole.printNotificationToConsole(notification);
+            NotificationToConsolePrinter.printNotificationToConsole(notification);
         }
     }
 

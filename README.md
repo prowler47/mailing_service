@@ -27,7 +27,7 @@
       * CheckNotifications
       * SimpleCheckNotifications
       * TestCheckNotifications
-    * **comporator**
+    * **comparator**
       * DateComparator
     * **filter**
       * Filter

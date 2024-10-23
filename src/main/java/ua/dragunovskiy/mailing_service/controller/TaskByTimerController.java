@@ -20,10 +20,12 @@ public class TaskByTimerController {
     private final SimpleFilterNotifications simpleFilterNotifications;
 
     private final int interval59Minutes = 3540000;
-    private final List<SenderType> senderTypes = List.of(SenderType.MAIL, SenderType.TELEGRAM, SenderType.VIBER);
+
+    private final int interval30minutes = 1800000;
+    private final List<SenderType> senderTypes = List.of(SenderType.MAIL, SenderType.TELEGRAM);
     @GetMapping("/timerTest")
     public void startTaskByTimer() {
 //        new TimerForTask(simpleFilterNotifications, simpleCheckNotifications).checkInTime(5000, simpleCheckNotifications);
-        new TaskByTimer(simpleFilterNotifications).checkInTimeWithSenderTypes(180000, simpleCheckNotifications, senderTypes);
+        new TaskByTimer(simpleFilterNotifications).checkInTimeWithSenderTypes(interval59Minutes, simpleCheckNotifications, senderTypes);
     }
 }

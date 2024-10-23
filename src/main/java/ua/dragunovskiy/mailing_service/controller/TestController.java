@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.sender.SenderType;
+import ua.dragunovskiy.mailing_service.sender.SimpleMailSender;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
+import ua.dragunovskiy.mailing_service.service.TestMailSender;
 import ua.dragunovskiy.mailing_service.timemechanism.check.SimpleCheckNotifications;
 import ua.dragunovskiy.mailing_service.timemechanism.comparator.DateComparator;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
@@ -23,6 +25,8 @@ public class TestController {
     private final SimpleCheckNotifications simpleCheckNotifications;
     private final NotificationService notificationService;
     private final SimpleFilterNotifications simpleFilterNotifications;
+
+    private final TestMailSender testMailSender;
     private final List<SenderType> senderTypes = List.of(SenderType.MAIL, SenderType.TELEGRAM, SenderType.VIBER);
 
     @GetMapping("/hello")
@@ -68,5 +72,11 @@ public class TestController {
             System.out.println("need to delete");
         } else System.out.println("nothing to delete");
         return null;
+    }
+
+    @GetMapping("sendEmail")
+    public String testSendEmail() {
+        testMailSender.sendMail();
+        return "mail sender send message";
     }
 }

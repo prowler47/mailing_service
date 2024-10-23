@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.sender.Sender;
 import ua.dragunovskiy.mailing_service.sender.SenderType;
-import ua.dragunovskiy.mailing_service.sender.senderutil.ChooseSender;
+import ua.dragunovskiy.mailing_service.sender.SimpleMailSender;
+import ua.dragunovskiy.mailing_service.sender.ChooseSender;
 import ua.dragunovskiy.mailing_service.util.Time;
 
 import java.text.SimpleDateFormat;
@@ -15,9 +16,13 @@ import java.util.*;
 @Data
 public class SenderByTime {
 
-    List<Notification> sentNotificationsMail = new ArrayList<>();
-    List<Notification> sentNotificationsTelegram = new ArrayList<>();
-    List<Notification> sentNotificationsViber = new ArrayList<>();
+    private final SimpleMailSender simpleMailSender;
+
+    Set<Notification> sentNotificationsMail = new HashSet<>();
+    Set<Notification> sentNotificationsTelegram = new HashSet<>();
+    Set<Notification> sentNotificationsViber = new HashSet<>();
+    Set<UUID> sentNotificationsUUIDList = new HashSet<>();
+
 
     public void sendNotificationByTime(List<Notification> notificationsForSend, int interval, List<SenderType> senderTypes) {
         Timer timer = new Timer();
@@ -26,11 +31,14 @@ public class SenderByTime {
             public void run() {
                 for (Notification notification : notificationsForSend) {
                     for (SenderType senderType : senderTypes) {
-                        Sender sender = ChooseSender.chooseSender(senderType);
+                        Sender sender = new ChooseSender(simpleMailSender).chooseSender(senderType);
                         if (timeChecker(notification.getDate())) {
                             if (sender.getType().equals("mailSender")) {
                                 if (!sentNotificationsMail.contains(notification)) {
-                                    sendNotificationAndDistributeNotificationForSentLists(notification, sender);
+                                    if (!sentNotificationsUUIDList.contains(notification.getId())) {
+                                        sendNotificationAndDistributeNotificationForSentLists(notification, sender);
+                                        sentNotificationsUUIDList.add(notification.getId());
+                                    }
                                 }
                             }
                             if (sender.getType().equals("telegramSender")) {
@@ -51,8 +59,10 @@ public class SenderByTime {
     }
 
     private void sendNotificationAndDistributeNotificationForSentLists(Notification notification, Sender sender) {
-        sender.send(notification.getAddress(), notification.getTitle(), notification.getPayload() + ", date: " + notification.getDate());
-        notificationsSenderDistribute(notification, sender, sentNotificationsMail, sentNotificationsTelegram, sentNotificationsViber);
+            sender.send(notification.getAddress(), notification.getTitle(), notification.getPayload() + ", date: " + notification.getDate());
+            notificationsSenderDistribute(notification, sender, sentNotificationsMail, sentNotificationsTelegram, sentNotificationsViber);
+//        sender.send(notification.getAddress(), notification.getTitle(), notification.getPayload() + ", date: " + notification.getDate());
+//        notificationsSenderDistribute(notification, sender, sentNotificationsMail, sentNotificationsTelegram, sentNotificationsViber);
     }
 
     private boolean timeChecker(String time) {
@@ -63,7 +73,7 @@ public class SenderByTime {
         return notificationTime.equals(currentDateTime);
     }
 
-    private void notificationsSenderDistribute(Notification notification, Sender sender, List<Notification> mail, List<Notification> telegram, List<Notification> viber) {
+    private void notificationsSenderDistribute(Notification notification, Sender sender, Set<Notification> mail, Set<Notification> telegram, Set<Notification> viber) {
         if (sender.getType().equals("mailSender")) {
             mail.add(notification);
         } else if (sender.getType().equals("telegramSender")) {
@@ -98,7 +108,7 @@ public class SenderByTime {
         return date.split(" ")[1];
     }
 
-    private Set<Notification> filterToClear(List<Notification> notificationList) {
+    private Set<Notification> filterToClear(Set<Notification> notificationList) {
         Set<Notification> notificationsForClear = new HashSet<>();
         for (Notification notification : notificationList) {
             if (Time.timeComparator(separateTimeFromDate(Time.getCurrentTime()), separateTimeFromDate(notification.getDate()))) {

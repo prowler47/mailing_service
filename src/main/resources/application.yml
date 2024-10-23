@@ -12,3 +12,18 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sdragunovskiy@gmail.com
+    password: mpju pcjy nltk ffst
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+#  main:
+#      allow-circular-references: true

@@ -1,5 +1,6 @@
 package ua.dragunovskiy.mailing_service.sender;
 
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -8,6 +9,8 @@ public class TelegramSender implements Sender {
     public void send(String address, String subject, String message) {
         System.out.println("Telegram sender is working...message from notifications is: " + message);
     }
+
+
 
     @Override
     public String getType() {

@@ -36,7 +36,7 @@ public class TaskByTimer {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("checkInTimeWithSenderTypes update every 3 minutes... - " + Time.getCurrentTime());
+                System.out.println("checkInTimeWithSenderTypes update every " + intervalInMilliSeconds / 60000 + " minutes - " + Time.getCurrentTime());
                 checkNotifications.checkNotificationsForSendWithSenderTypes(filter, senderTypes);
             }
         }, 0, intervalInMilliSeconds);

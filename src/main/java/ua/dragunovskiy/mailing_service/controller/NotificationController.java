@@ -2,6 +2,7 @@ package ua.dragunovskiy.mailing_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
@@ -22,6 +23,11 @@ public class NotificationController {
     @GetMapping("/getAllNotifications")
     public List<Notification> getAllNotifications() {
         return notificationService.getAllNotifications();
+    }
+
+    @GetMapping("/getAllNotificationsByUsername")
+    public List<NotificationDto> getAllNotificationsByUsernameFromCookie() {
+        return notificationService.getAllNotificationsByUsernameFromCookie();
     }
 
     @PostMapping("/addNotification")

@@ -1,14 +1,17 @@
 package ua.dragunovskiy.mailing_service.ui;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.entity.User;
+import ua.dragunovskiy.mailing_service.security.dto.JwtRequestDto;
+import ua.dragunovskiy.mailing_service.security.dto.RegistrationUserDto;
+import ua.dragunovskiy.mailing_service.security.service.AuthService;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
 import ua.dragunovskiy.mailing_service.util.FromDatetimeLocalToStringParser;
 
@@ -16,8 +19,8 @@ import ua.dragunovskiy.mailing_service.util.FromDatetimeLocalToStringParser;
 @RequestMapping("/view")
 @RequiredArgsConstructor
 public class ViewController {
-
     private final NotificationService notificationService;
+    private final AuthService authService;
 
 
     @GetMapping("/done")
@@ -25,44 +28,90 @@ public class ViewController {
         return "itsDone";
     }
 
+    @GetMapping("/info")
+    public String info() { return "info"; }
+
     @GetMapping("/registrationSuccess")
     public String registrationSuccessPage() {
         return "registration_success";
     }
+
+    @GetMapping("/passwordNotMatch")
+    public String passwordNotMatch() {return "password_not_match"; }
+
+    @GetMapping("/userAlreadyExist")
+    public String userAlreadyExist() { return "user_already_exist";}
+
+    @GetMapping("/emailAlreadyExist")
+    public String emailAlreadyExist() { return "email_already_exist"; }
 
     @GetMapping("/loginSuccess")
     public String loginSuccessPage() {
         return "login_success";
     }
 
+    @GetMapping("/loginError")
+    public String loginError() {return "login_error"; }
+
     @GetMapping("/home")
     public String home() {
         return "home";
     }
 
+    @GetMapping("/successLoginHome")
+    public String successLoginUserHome() { return "home_login_user";}
+
     @GetMapping("/registration")
     public String userRegistration(Model model) {
-        User user = new User();
+        RegistrationUserDto user = new RegistrationUserDto();
         model.addAttribute("newUser", user);
         return "registration";
     }
 
     @PostMapping("/registerUser")
-    public String userRegistration(@ModelAttribute("newUser") User user) {
+    public String userRegistration(@ModelAttribute("newUser") RegistrationUserDto user) {
+        ResponseEntity<?> response = authService.createNewUser(user);
+        if (response.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+            return "redirect:/view/userAlreadyExist";
+        }
+        if (response.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+            return "redirect:/view/passwordNotMatch";
+        }
+        if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {
+            return "redirect:/view/emailAlreadyExist";
+        }
+        System.out.println(user.getUsername());
         return "redirect:/view/registrationSuccess";
     }
 
     @GetMapping("/login")
     public String userLogin(Model model) {
-        User user = new User();
-        model.addAttribute("loginUser", user);
+        JwtRequestDto jwtRequestDto = new JwtRequestDto();
+        model.addAttribute("loginUser", jwtRequestDto);
         return "login";
     }
 
     @PostMapping("/loginUser")
-    public String userLogin(@ModelAttribute("loginUser") User user) {
-        return "redirect:/view/loginSuccess";
+    public String userLogin(@ModelAttribute JwtRequestDto jwtRequestDto, HttpServletResponse response) {
+        System.out.println(jwtRequestDto.getUsername());
+        ResponseEntity<?> authToken = authService.createAuthToken(jwtRequestDto);
+        if (authToken.getStatusCode().is4xxClientError()) {
+            return "redirect:/view/loginError";
+        }
+        String tokenSubstring = authToken.getBody().toString().substring(21);
+        String token = tokenSubstring.substring(0, tokenSubstring.length() - 1);
+        Cookie cookie = new Cookie("jwt", token);
+        cookie.setPath("/");
+        cookie.setMaxAge(86400);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+        response.setContentType("text/plain");
+        return "redirect:/view/userPage";
     }
+
+    @GetMapping("/userPage")
+    public String userPage() { return "user_page"; }
+
     @GetMapping("/newNotification")
     public String addNewNotification(Model model) {
         Notification notification = new Notification();
@@ -77,6 +126,4 @@ public class ViewController {
         notificationService.addNewNotification(notification);
         return "redirect:/view/done";
     }
-
-
 }

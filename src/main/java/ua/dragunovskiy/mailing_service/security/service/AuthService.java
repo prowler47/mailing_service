@@ -42,6 +42,9 @@ public class AuthService {
         if (userService.findUserByUsername(registrationUserDto.getUsername()).isPresent()) {
             return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "User with notice username is already exist"), HttpStatus.UNAUTHORIZED);
         }
+        if (userService.isEmailExist(registrationUserDto.getEmail())) {
+            return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), "Emails is already exist"), HttpStatus.CONFLICT);
+        }
         UserEntity user = userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername(), user.getPassword()));
     }

@@ -3,6 +3,7 @@ package ua.dragunovskiy.mailing_service.security.filter;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +19,29 @@ import ua.dragunovskiy.mailing_service.security.util.JwtTokenUtil;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class JwtRequestFilter extends OncePerRequestFilter {
+@RequiredArgsConstructor
+public class JwtCookieFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
-
+    private final UserNameStorage<String> userTokenStorage;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("jwt")) {
+                    jwt = cookie.getValue();
+                    break;
+                }
+            }
             try {
                 username = jwtTokenUtil.getUsername(jwt);
             } catch (ExpiredJwtException e) {
                 log.debug("expiration time of JWT is gone");
             }
+            userTokenStorage.putUsernameToStorage(username);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

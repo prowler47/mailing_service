@@ -31,4 +31,7 @@ public class Notification {
 
     @Column(name = "date")
     private String date;
+
+    @Column(name = "username")
+    private String username;
 }

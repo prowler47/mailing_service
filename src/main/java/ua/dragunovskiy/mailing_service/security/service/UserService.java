@@ -1,7 +1,11 @@
 package ua.dragunovskiy.mailing_service.security.service;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +27,9 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EntityManager entityManager;
 
 
     public Optional<UserEntity> findUserByUsername(String username) {
@@ -47,5 +54,22 @@ public class UserService implements UserDetailsService {
         user.setEmail(registrationUserDto.getEmail());
         user.setRoles(List.of(roleService.getUserRole()));
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public boolean isEmailExist(String submittedEmail) {
+        List<String> emails;
+        Session session = entityManager.unwrap(Session.class);
+        Query<UserEntity> query = session.createQuery("from UserEntity", UserEntity.class);
+        List<UserEntity> userEntityList = query.getResultList();
+        emails = userEntityList.stream().map(UserEntity::getEmail).toList();
+        for (String email : emails) {
+            if (email != null) {
+                if (email.equals(submittedEmail)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ua.dragunovskiy.mailing_service.security.filter.JwtCookieFilter;
 import ua.dragunovskiy.mailing_service.security.filter.JwtRequestFilter;
 import ua.dragunovskiy.mailing_service.security.repository.UserRepository;
 import ua.dragunovskiy.mailing_service.security.service.RoleService;
@@ -27,6 +28,7 @@ import ua.dragunovskiy.mailing_service.security.service.UserService;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtRequestFilter jwtRequestFilter;
+    private final JwtCookieFilter jwtCookieFilter;
     private final UserRepository userRepository;
     private final RoleService roleService;
 
@@ -43,12 +45,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/secured").authenticated()
+                                .requestMatchers("/view/userPage").authenticated()
+                                .requestMatchers("/view/info").permitAll()
+                                .requestMatchers("/view/login").permitAll()
+                                .requestMatchers("/view/registration").permitAll()
                                 .requestMatchers("/admin").hasRole("ADMIN").anyRequest().permitAll())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtCookieFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
     @Bean

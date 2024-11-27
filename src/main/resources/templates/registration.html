@@ -17,13 +17,16 @@
   <form th:object="${newUser}" th:action="@{/view/registerUser}" method="post">
     <p>REGISTRATION:</p>
     <div>
-      <input type="text" id="name" th:field="${newUser.name}" placeholder="login*" required/>
+      <input type="text" id="name" th:field="*{username}" placeholder="login*" required/>
     </div>
     <div>
-      <input type="text" id="password" th:field="${newUser.password}" placeholder="password*" required/>
+      <input type="text" id="password" th:field="*{password}" placeholder="password*" required/>
     </div>
     <div>
-      <input type="text" id="password_again" th:field="${newUser.password}" placeholder="enter password*" required/>
+      <input type="text" id="password_again" th:field="*{confirmPassword}" placeholder="enter password*" required/>
+    </div>
+    <div>
+      <input type="text" id="email" th:field="*{email}" placeholder="email*" required/>
     </div>
     <br>
     <button type="submit">register</button>

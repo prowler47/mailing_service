@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ua.dragunovskiy.mailing_service.dto.NotificationDto;
+import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.security.dto.JwtRequestDto;
 import ua.dragunovskiy.mailing_service.security.dto.RegistrationUserDto;
@@ -15,13 +17,15 @@ import ua.dragunovskiy.mailing_service.security.service.AuthService;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
 import ua.dragunovskiy.mailing_service.util.FromDatetimeLocalToStringParser;
 
+import java.util.List;
+import java.util.UUID;
+
 @Controller
 @RequestMapping("/view")
 @RequiredArgsConstructor
 public class ViewController {
     private final NotificationService notificationService;
     private final AuthService authService;
-
 
     @GetMapping("/done")
     public String itsDonePage() {
@@ -125,5 +129,25 @@ public class ViewController {
         notification.setDate(FromDatetimeLocalToStringParser.parse(notification.getDate()));
         notificationService.addNewNotification(notification);
         return "redirect:/view/done";
+    }
+
+//    @GetMapping("/getAllNotificationsByUsername")
+//    public String printAllNotificationsByUsername(Model model) {
+//        List<NotificationDto> notifications = notificationService.getAllNotificationsByUsernameFromCookie();
+//        model.addAttribute("notifications", notifications);
+//        return "notificationsByUsername";
+//    }
+
+    @GetMapping("/getAllNotificationsByUsername")
+    public String printAllNotificationsByUsername(Model model) {
+        List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
+        model.addAttribute("notifications", notifications);
+        return "notificationsByUsername";
+    }
+
+    @PostMapping("/deleteNotification")
+    public String deleteNotification(@RequestParam UUID id) {
+        notificationService.deleteNotification(id);
+        return "redirect:/view/getAllNotificationsByUsername";
     }
 }

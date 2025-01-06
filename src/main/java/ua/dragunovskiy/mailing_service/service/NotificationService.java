@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ua.dragunovskiy.mailing_service.dao.Dao;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
+import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoMapper;
+import ua.dragunovskiy.mailing_service.mapper.NotificationDtoWithIDMapper;
 
 import java.text.ParseException;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class NotificationService {
     private final Dao<UUID, Notification> notificationDao;
     private final NotificationDtoMapper notificationDtoMapper;
+    private final NotificationDtoWithIDMapper notificationDtoWithIDMapper;
     public void addNewNotification() throws ParseException {
         Notification notification = new Notification();
         notification.setTitle("test_notification");
@@ -37,6 +40,11 @@ public class NotificationService {
         return notificationsByUsername.stream().map(notificationDtoMapper::map).toList();
     }
 
+    public List<NotificationDtoWithID> getAllNotificationDtoWithIDByUsernameFromCookies() {
+        List<Notification> notificationsByUsername = notificationDao.getAllByUsername();
+        return notificationsByUsername.stream().map(notificationDtoWithIDMapper::map).toList();
+    }
+
     public void addNewNotification(Notification notification) {
         notificationDao.add(notification);
     }
@@ -44,4 +52,5 @@ public class NotificationService {
     public void deleteNotification(UUID id) {
         notificationDao.delete(id);
     }
+
 }

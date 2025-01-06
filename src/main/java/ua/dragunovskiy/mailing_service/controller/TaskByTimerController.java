@@ -22,7 +22,7 @@ public class TaskByTimerController {
     private final int interval59Minutes = 3540000;
 
     private final int interval30minutes = 1800000;
-    private final List<SenderType> senderTypes = List.of(SenderType.MAIL, SenderType.TELEGRAM);
+    private final List<SenderType> senderTypes = List.of(SenderType.MAIL);
     @GetMapping("/timerTest")
     public void startTaskByTimer() {
 //        new TimerForTask(simpleFilterNotifications, simpleCheckNotifications).checkInTime(5000, simpleCheckNotifications);

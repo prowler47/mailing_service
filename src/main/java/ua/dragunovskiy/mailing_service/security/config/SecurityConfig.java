@@ -42,10 +42,15 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
+                .logout(logout -> {
+                        logout.logoutUrl("/view/logout")
+                                .logoutSuccessUrl("/view/home")
+                                .deleteCookies("jwt"); })
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/secured").authenticated()
                                 .requestMatchers("/view/userPage").authenticated()
+                                .requestMatchers("/view/successLoginHome").authenticated()
                                 .requestMatchers("/view/info").permitAll()
                                 .requestMatchers("/view/login").permitAll()
                                 .requestMatchers("/view/registration").permitAll()

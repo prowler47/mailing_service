@@ -1,6 +1,7 @@
 package ua.dragunovskiy.mailing_service.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -12,6 +13,7 @@ import ua.dragunovskiy.mailing_service.service.EncryptionService;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository("notificationDao")
@@ -50,6 +52,7 @@ public class NotificationDao implements Dao<UUID, Notification>  {
         Notification notificationForDelete = session.get(Notification.class, id);
         session.remove(notificationForDelete);
     }
+
 
     @Override
     @Transactional

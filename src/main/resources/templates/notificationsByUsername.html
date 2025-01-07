@@ -16,22 +16,45 @@
 </header>
 <div class="container">
 <h1>Notifications</h1>
-<ul>
-    <li th:each="notification : ${notifications}">
-        <span th:text="${notification.id}"></span>
-        <span th:text="${notification.address}"></span>
-        <span th:text="${notification.title}"></span>
-<!--        <a th:href="|@{/notifications/deleteNotification/${notification.id}}|">delete</a>-->
+<!--<ul>-->
+<!--    <li th:each="notification : ${notifications}">-->
+<!--        <span th:text="${notification.id}"></span>-->
+<!--        <span th:text="${notification.address}"></span>-->
+<!--        <span th:text="${notification.title}"></span>-->
 
-
-        <!--TODO: mechanic is works well. Need to set style for UI -->
-
-        <form th:action="@{/view/deleteNotification}" method="post">
-            <input type="hidden" name="id" th:value="${notification.id}" />
-            <input type="submit" value="Delete"/>
-        </form>
-    </li>
-</ul>
+<!--        &lt;!&ndash;TODO: mechanic is works well. Need to set style for UI &ndash;&gt;-->
+<!--        <form class="delete_notification_from_ui" th:action="@{/view/deleteNotification}" method="post">-->
+<!--            <input type="hidden" name="id" th:value="${notification.id}" />-->
+<!--            <button type="submit" value="Delete">Delete</button>-->
+<!--        </form>-->
+<!--    </li>-->
+<!--</ul>-->
+    <table th:each="notification : ${notifications}">
+        <thead>
+        <tr>
+            <th>email</th>
+            <th>title</th>
+            <th>message</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><span th:text="${notification.address}"></span></td>
+            <td><span th:text="${notification.title}"></span></td>
+            <td><span th:text="${notification.payload}"></span></td>
+        </tr>
+        <tr>
+            <td>
+                <form class="delete_notification_from_ui" th:action="@{/view/deleteNotification}" method="post">
+                    <input type="hidden" name="id" th:value="${notification.id}" />
+                    <button class="delete_or_update_notification_button" type="submit" value="Delete">Delete</button>
+                    <a class="update_notification_link" th:href="@{/view/updateNotification/{id}(id=${notification.id})}">Update</a>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        <br><br>
+    </table>
 </div>
 </body>
 </html>

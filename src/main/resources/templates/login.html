@@ -15,7 +15,7 @@
   </div>
 </header>
 <div class="container">
-  <form th:object="${loginUser}" th:action="@{/view/loginUser}" method="post">
+  <form class="common_form" th:object="${loginUser}" th:action="@{/view/loginUser}" method="post">
     <p>LOGIN:</p>
     <div>
       <input type="text" id="name" th:field="*{username}" placeholder="login*" required/>
@@ -24,7 +24,7 @@
       <input type="password" id="password" th:field="*{password}" placeholder="password*" required/>
     </div>
     <br>
-    <button type="submit">login</button>
+    <button class="common_button" type="submit">login</button>
   </form>
 </div>
 </body>

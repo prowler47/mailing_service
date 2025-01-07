@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface Dao<ID, E> {
     void add(E entity);
+
+    void update(ID updatedEntityId, E entityForUpdate);
     List<E> getAll();
     List<E> getAllByUsername();
     E getById(ID id);

@@ -14,7 +14,7 @@
   </div>
 </header>
 <div class="container">
-  <form th:object="${newUser}" th:action="@{/view/registerUser}" method="post">
+  <form class="common_form" th:object="${newUser}" th:action="@{/view/registerUser}" method="post">
     <p>REGISTRATION:</p>
     <div>
       <input type="text" id="name" th:field="*{username}" placeholder="login*" required/>
@@ -29,7 +29,7 @@
       <input type="text" id="email" th:field="*{email}" placeholder="email*" required/>
     </div>
     <br>
-    <button type="submit">register</button>
+    <button class="common_button" type="submit">register</button>
   </form>
 </div>
 </body>

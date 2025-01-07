@@ -17,7 +17,7 @@
 </header>
 <div class="container">
     <div class="form">
-<form th:object="${newNotification}" th:action="@{/view/addNotification}" method="post">
+<form class="common_form" th:object="${newNotification}" th:action="@{/view/addNotification}" method="post">
 <!--    <input type="hidden" th:field="*{id}" />-->
     <p>ENTER YOUR MESSAGE:</p>
         <div>
@@ -36,7 +36,7 @@
             <input type="datetime-local" id="date" th:field="${newNotification.date}" required/>
         </div>
     <br>
-    <button type="submit">add notification</button>
+    <button class="common_button" type="submit">add notification</button>
 </form>
     </div>
 </div>

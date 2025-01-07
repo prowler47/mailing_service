@@ -3,11 +3,14 @@ package ua.dragunovskiy.mailing_service.ui;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.Banner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.servlet.ModelAndView;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
@@ -125,11 +128,26 @@ public class ViewController {
 
     @PostMapping("/addNotification")
     public String addNewNotification(@ModelAttribute("newNotification") Notification notification) {
-//        System.out.println(FromDatetimeLocalToStringParser.parse(notification.getDate()));
         notification.setDate(FromDatetimeLocalToStringParser.parse(notification.getDate()));
         notificationService.addNewNotification(notification);
         return "redirect:/view/done";
     }
+
+    @GetMapping("/updateNotification/{id}")
+    public String updateNotification(Model model, @PathVariable("id") UUID id) {
+        Notification notificationForUpdate = notificationService.getNotificationById(id);
+        model.addAttribute("notificationForUpdate", notificationForUpdate);
+        return "updateNotification";
+    }
+
+    @PostMapping("/updateNotification")
+    public String updateNotification(@ModelAttribute("notificationForUpdate") Notification notificationForUpdate) {
+        notificationService.updateNotification(notificationForUpdate.getId(), notificationForUpdate);
+        return "redirect:/view/getAllNotificationsByUsername";
+    }
+
+
+    // use notification dto without id
 
 //    @GetMapping("/getAllNotificationsByUsername")
 //    public String printAllNotificationsByUsername(Model model) {
@@ -138,12 +156,21 @@ public class ViewController {
 //        return "notificationsByUsername";
 //    }
 
+    // use notification dto with id
     @GetMapping("/getAllNotificationsByUsername")
     public String printAllNotificationsByUsername(Model model) {
         List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
         model.addAttribute("notifications", notifications);
         return "notificationsByUsername";
     }
+
+//    @GetMapping("/getAllNotificationsByUsername")
+//    public ModelAndView printAllNotificationsByUsername(Model model) {
+//        List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
+//        model.addAttribute("notifications", notifications);
+//        return new ModelAndView("notificationsByUsername");
+//    }
+
 
     @PostMapping("/deleteNotification")
     public String deleteNotification(@RequestParam UUID id) {

@@ -9,6 +9,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.service.EncryptionService;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
 
@@ -34,6 +35,20 @@ public class NotificationDao implements Dao<UUID, Notification>  {
 
     @Override
     @Transactional
+    public void update(UUID updatedEntityId, Notification entityForUpdate) {
+        Notification updatedEntity = getById(updatedEntityId);
+        Session session = entityManager.unwrap(Session.class);
+        updatedEntity.setUsername(entityForUpdate.getUsername());
+        updatedEntity.setId(entityForUpdate.getId());
+        updatedEntity.setTitle(entityForUpdate.getTitle());
+        updatedEntity.setAddress(entityForUpdate.getAddress());
+        updatedEntity.setDate(entityForUpdate.getDate());
+        updatedEntity.setPayload(entityForUpdate.getPayload());
+        session.merge(updatedEntity);
+    }
+
+    @Override
+    @Transactional
     public List<Notification> getAll() {
         Session session = entityManager.unwrap(Session.class);
         Query<Notification> query = session.createQuery("from Notification", Notification.class);
@@ -41,8 +56,10 @@ public class NotificationDao implements Dao<UUID, Notification>  {
     }
 
     @Override
+    @Transactional
     public Notification getById(UUID id) {
-        return null;
+        Session session = entityManager.unwrap(Session.class);
+        return session.get(Notification.class, id);
     }
 
     @Override
@@ -53,13 +70,13 @@ public class NotificationDao implements Dao<UUID, Notification>  {
         session.remove(notificationForDelete);
     }
 
-
     @Override
     @Transactional
     public List<Notification> getAllByUsername() {
-        String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
-        Session session = entityManager.unwrap(Session.class);
-        List<Notification> allNotifications = session.createQuery("from Notification", Notification.class).getResultList();
-        return allNotifications.stream().filter(notification -> notification.getUsername().equals(encodeUsername)).toList();
+            String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
+            System.out.println(encodeUsername);
+            Session session = entityManager.unwrap(Session.class);
+            List<Notification> allNotifications = session.createQuery("from Notification", Notification.class).getResultList();
+            return allNotifications.stream().filter(notification -> notification.getUsername().equals(encodeUsername)).toList();
     }
 }

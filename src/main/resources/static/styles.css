@@ -38,13 +38,9 @@ p {
     padding-top: 40px;
 }
 
-.form {
-   /* border: 1px solid blue; */
-    margin: 0 auto;
-    width: 50%;
-}
-
-form {
+.common_form {
+  margin: 0 auto;
+  width: 50%;
   font-family: FORUM;
   display: flex;
   flex-direction: column;
@@ -108,7 +104,7 @@ textarea:focus {
   outline: none;
 }
 
-button {
+.common_button {
   display: inline-block;
   font-size: 14px;
   padding: 15px 32px;
@@ -120,7 +116,7 @@ button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-button:hover {
+.common_button:hover {
     background-color: #899878;
     color: #F7F7F2;
   }
@@ -185,4 +181,58 @@ button:hover {
    margin-bottom: 200px;
    color: #3C443A;
    font-size: 35px;
+}
+
+.delete_notification_from_ui {
+     width: 40px;
+     font-family: FORUM;
+     align-items: center;
+}
+
+.delete_or_update_notification_button {
+     display: inline-block;
+     font-size: 12px;
+     padding: 10px 22px;
+     background-color: #F7F7F2;
+     color: #222725;
+     border: none;
+     border-radius: 12px;
+     cursor: pointer;
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.delete_or_update_notification_button:hover {
+    background-color: #899878;
+    color: #F7F7F2;
+}
+
+table {
+      border: 1px solid #F7F7F2;
+      border-spacing: 1px;
+      border-radius: 20px;
+      width: 100%;
+}
+
+th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+.update_notification_link {
+      display: inline-block;
+      font-size: 13px;
+      padding: 10px 22px;
+      margin-top: 10px;
+      background-color: #F7F7F2;
+      color: #222725;
+      text-decoration: none;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.update_notification_link:hover {
+      background-color: #899878;
+      color: #F7F7F2;
 }

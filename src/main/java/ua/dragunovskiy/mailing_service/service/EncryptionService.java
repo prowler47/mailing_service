@@ -10,7 +10,11 @@ import java.util.Base64;
 public class EncryptionService {
 
     public String encodeUsername(String rawUsername) {
-        return Base64.getEncoder().encodeToString(rawUsername.getBytes());
+        if (rawUsername != null) {
+            return Base64.getEncoder().encodeToString(rawUsername.getBytes());
+        } else {
+            throw new RuntimeException("Username from cookie is null");
+        }
     }
 
     public String decodeUsername(String encodedUsername) {

@@ -49,6 +49,13 @@ public class NotificationService {
         notificationDao.add(notification);
     }
 
+    public Notification getNotificationById(UUID id) {
+        return notificationDao.getById(id);
+    }
+
+    public void updateNotification(UUID updatedNotificationId, Notification notificationForUpdate) {
+        notificationDao.update(updatedNotificationId, notificationForUpdate);
+    }
     public void deleteNotification(UUID id) {
         notificationDao.delete(id);
     }

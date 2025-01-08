@@ -9,11 +9,14 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
 import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.service.EncryptionService;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
 import ua.dragunovskiy.mailing_service.util.FromDatetimeLocalToStringParser;
+import ua.dragunovskiy.mailing_service.util.Time;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +48,10 @@ public class NotificationDao implements Dao<UUID, Notification>  {
         updatedEntity.setAddress(entityForUpdate.getAddress());
         String parseDate = FromDatetimeLocalToStringParser.parse(entityForUpdate.getDate());
         updatedEntity.setDate(parseDate);
+        if (Time.timeComparatorV2(Time.getCurrentTime(), updatedEntity.getDate())) {
+            System.out.println("message already send");
+            throw new OverdueMessage("This message is already send");
+        }
         updatedEntity.setPayload(entityForUpdate.getPayload());
         session.merge(updatedEntity);
     }
@@ -75,10 +82,14 @@ public class NotificationDao implements Dao<UUID, Notification>  {
     @Override
     @Transactional
     public List<Notification> getAllByUsername() {
-            String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
-            System.out.println(encodeUsername);
-            Session session = entityManager.unwrap(Session.class);
+        String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
+        Session session = entityManager.unwrap(Session.class);
+        try {
             List<Notification> allNotifications = session.createQuery("from Notification", Notification.class).getResultList();
             return allNotifications.stream().filter(notification -> notification.getUsername().equals(encodeUsername)).toList();
+        } catch (NullPointerException e) {
+            throw new UsernameFromCookieNotFound("Username is null");
+        }
+
     }
 }

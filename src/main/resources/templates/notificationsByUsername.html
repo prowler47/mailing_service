@@ -14,35 +14,39 @@
         <a href="/view/logout">Logout</a>
     </div>
 </header>
-<div class="container">
+<div class="list_of_notifications_container">
 <h1>Notifications</h1>
-<!--<ul>-->
-<!--    <li th:each="notification : ${notifications}">-->
-<!--        <span th:text="${notification.id}"></span>-->
-<!--        <span th:text="${notification.address}"></span>-->
-<!--        <span th:text="${notification.title}"></span>-->
-
-<!--        &lt;!&ndash;TODO: mechanic is works well. Need to set style for UI &ndash;&gt;-->
-<!--        <form class="delete_notification_from_ui" th:action="@{/view/deleteNotification}" method="post">-->
-<!--            <input type="hidden" name="id" th:value="${notification.id}" />-->
-<!--            <button type="submit" value="Delete">Delete</button>-->
-<!--        </form>-->
-<!--    </li>-->
-<!--</ul>-->
     <table th:each="notification : ${notifications}">
         <thead>
         <tr>
             <th>email</th>
             <th>title</th>
+            <th>date</th>
             <th>message</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td><span th:text="${notification.address}"></span></td>
-            <td><span th:text="${notification.title}"></span></td>
-            <td><span th:text="${notification.payload}"></span></td>
-            <td><span th:text="${notification.date}"></span></td>
+            <td>
+                <div class="address_container">
+                    <span th:text="${notification.address}"></span>
+                </div>
+            </td>
+            <td>
+                <div class="title_container">
+                    <span th:text="${notification.title}"></span>
+                </div>
+            </td>
+            <td>
+                <div class="date_container">
+                    <span th:text="${notification.date}"></span>
+                </div>
+            </td>
+            <td>
+                <div class="message_container">
+                    <span th:text="${notification.payload}"></span>
+                </div>
+            </td>
         </tr>
         <tr>
             <td>

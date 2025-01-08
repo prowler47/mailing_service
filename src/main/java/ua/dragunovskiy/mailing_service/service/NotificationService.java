@@ -9,6 +9,8 @@ import ua.dragunovskiy.mailing_service.dao.Dao;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoMapper;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoWithIDMapper;
 
@@ -35,12 +37,12 @@ public class NotificationService {
        return notificationDao.getAll();
     }
 
-    public List<NotificationDto> getAllNotificationsByUsernameFromCookie() {
+    public List<NotificationDto> getAllNotificationsByUsernameFromCookie() throws UsernameFromCookieNotFound {
         List<Notification> notificationsByUsername = notificationDao.getAllByUsername();
         return notificationsByUsername.stream().map(notificationDtoMapper::map).toList();
     }
 
-    public List<NotificationDtoWithID> getAllNotificationDtoWithIDByUsernameFromCookies() {
+    public List<NotificationDtoWithID> getAllNotificationDtoWithIDByUsernameFromCookies() throws UsernameFromCookieNotFound {
         List<Notification> notificationsByUsername = notificationDao.getAllByUsername();
         return notificationsByUsername.stream().map(notificationDtoWithIDMapper::map).toList();
     }
@@ -53,7 +55,7 @@ public class NotificationService {
         return notificationDao.getById(id);
     }
 
-    public void updateNotification(UUID updatedNotificationId, Notification notificationForUpdate) {
+    public void updateNotification(UUID updatedNotificationId, Notification notificationForUpdate) throws OverdueMessage {
         notificationDao.update(updatedNotificationId, notificationForUpdate);
     }
     public void deleteNotification(UUID id) {

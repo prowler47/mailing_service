@@ -14,6 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.security.dto.JwtRequestDto;
 import ua.dragunovskiy.mailing_service.security.dto.RegistrationUserDto;
 import ua.dragunovskiy.mailing_service.security.service.AuthService;
@@ -142,8 +144,17 @@ public class ViewController {
 
     @PostMapping("/updateNotification")
     public String updateNotification(@ModelAttribute("notificationForUpdate") Notification notificationForUpdate) {
-        notificationService.updateNotification(notificationForUpdate.getId(), notificationForUpdate);
-        return "redirect:/view/getAllNotificationsByUsername";
+        try {
+            notificationService.updateNotification(notificationForUpdate.getId(), notificationForUpdate);
+            return "redirect:/view/getAllNotificationsByUsername";
+        } catch (OverdueMessage e) {
+            return "redirect:/view/overdueMessage";
+        }
+    }
+
+    @GetMapping("/overdueMessage")
+    public String overdueMessage() {
+        return "overdueMessage";
     }
 
 
@@ -159,18 +170,16 @@ public class ViewController {
     // use notification dto with id
     @GetMapping("/getAllNotificationsByUsername")
     public String printAllNotificationsByUsername(Model model) {
-        List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
-        model.addAttribute("notifications", notifications);
-        return "notificationsByUsername";
+        try {
+            List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
+            model.addAttribute("notifications", notifications);
+            return "notificationsByUsername";
+        } catch (UsernameFromCookieNotFound e) {
+            System.out.println(e.getMessage());
+            return "redirect:/view/home";
+        }
+
     }
-
-//    @GetMapping("/getAllNotificationsByUsername")
-//    public ModelAndView printAllNotificationsByUsername(Model model) {
-//        List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
-//        model.addAttribute("notifications", notifications);
-//        return new ModelAndView("notificationsByUsername");
-//    }
-
 
     @PostMapping("/deleteNotification")
     public String deleteNotification(@RequestParam UUID id) {

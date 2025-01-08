@@ -12,9 +12,8 @@ public class EncryptionService {
     public String encodeUsername(String rawUsername) {
         if (rawUsername != null) {
             return Base64.getEncoder().encodeToString(rawUsername.getBytes());
-        } else {
-            throw new RuntimeException("Username from cookie is null");
         }
+        return null;
     }
 
     public String decodeUsername(String encodedUsername) {

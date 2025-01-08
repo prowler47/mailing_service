@@ -12,6 +12,7 @@ import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.service.EncryptionService;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
+import ua.dragunovskiy.mailing_service.util.FromDatetimeLocalToStringParser;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,8 @@ public class NotificationDao implements Dao<UUID, Notification>  {
         updatedEntity.setId(entityForUpdate.getId());
         updatedEntity.setTitle(entityForUpdate.getTitle());
         updatedEntity.setAddress(entityForUpdate.getAddress());
-        updatedEntity.setDate(entityForUpdate.getDate());
+        String parseDate = FromDatetimeLocalToStringParser.parse(entityForUpdate.getDate());
+        updatedEntity.setDate(parseDate);
         updatedEntity.setPayload(entityForUpdate.getPayload());
         session.merge(updatedEntity);
     }

@@ -1,6 +1,7 @@
 package ua.dragunovskiy.mailing_service.security.storage;
 
 import org.springframework.stereotype.Component;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 
 import java.util.*;
 
@@ -19,9 +20,21 @@ public class SimpleUserNameStorage implements UserNameStorage<String> {
         storage.add(username);
     }
 
+//    @Override
+//    public String getUsernameFromStorage() {
+//        if (!storage.isEmpty()) {
+//            return storage.get(0);
+//        }
+//        return "Storage is empty";
+//    }
+
     @Override
     public String getUsernameFromStorage() {
-        return storage.get(0);
+        if (!storage.isEmpty()) {
+            return storage.get(0);
+        }
+        System.out.println("Storage of user names is empty");
+        return null;
     }
 }
 

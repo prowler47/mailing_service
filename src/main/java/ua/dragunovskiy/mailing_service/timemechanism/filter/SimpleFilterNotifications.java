@@ -1,7 +1,7 @@
 package ua.dragunovskiy.mailing_service.timemechanism.filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ua.dragunovskiy.mailing_service.dao.NotificationDao;
+import ua.dragunovskiy.mailing_service.repository.NotificationDao;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
 import ua.dragunovskiy.mailing_service.timemechanism.comparator.DateComparator;

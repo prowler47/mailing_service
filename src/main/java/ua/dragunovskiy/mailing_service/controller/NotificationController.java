@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.repository.NotificationDao;
 import ua.dragunovskiy.mailing_service.service.NotificationService;
 import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
 
@@ -13,6 +14,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/notifications")
 public class NotificationController {
+
+    @Autowired
+    private NotificationDao notificationDao;
 
     @Autowired
     private NotificationService notificationService;
@@ -25,14 +29,14 @@ public class NotificationController {
         return notificationService.getAllNotifications();
     }
 
-    @GetMapping("/getAllNotificationsByUsername")
-    public List<NotificationDto> getAllNotificationsByUsernameFromCookie() {
-        return notificationService.getAllNotificationsByUsernameFromCookie();
+    @GetMapping("/getById/{id}")
+    public Notification getById(@PathVariable("id") UUID id) {
+        return notificationService.getNotificationById(id);
     }
 
     @PostMapping("/addNotification")
     public void addNotification(@RequestBody Notification notification) {
-        notificationService.addNewNotification(notification);
+        notificationDao.save(notification);
     }
 
     @PostMapping("/deleteOverdueNotifications")

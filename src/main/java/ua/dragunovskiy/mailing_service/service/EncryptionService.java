@@ -2,6 +2,7 @@ package ua.dragunovskiy.mailing_service.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 
 import java.util.Base64;
 
@@ -13,7 +14,7 @@ public class EncryptionService {
         if (rawUsername != null) {
             return Base64.getEncoder().encodeToString(rawUsername.getBytes());
         }
-        return null;
+        throw new UsernameFromCookieNotFound("Username from cookie not found");
     }
 
     public String decodeUsername(String encodedUsername) {

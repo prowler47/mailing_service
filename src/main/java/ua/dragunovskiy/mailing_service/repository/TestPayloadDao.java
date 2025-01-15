@@ -1,4 +1,4 @@
-package ua.dragunovskiy.mailing_service.dao;
+package ua.dragunovskiy.mailing_service.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;

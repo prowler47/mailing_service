@@ -131,7 +131,8 @@ public class ViewController {
     @PostMapping("/addNotification")
     public String addNewNotification(@ModelAttribute("newNotification") Notification notification) {
         notification.setDate(FromDatetimeLocalToStringParser.parse(notification.getDate()));
-        notificationService.addNewNotification(notification);
+//        notificationService.addNewNotification(notification);
+        notificationService.saveNewNotification(notification);
         return "redirect:/view/done";
     }
 
@@ -171,7 +172,7 @@ public class ViewController {
     @GetMapping("/getAllNotificationsByUsername")
     public String printAllNotificationsByUsername(Model model) {
         try {
-            List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookies();
+            List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookiesV2();
             model.addAttribute("notifications", notifications);
             return "notificationsByUsername";
         } catch (UsernameFromCookieNotFound e) {

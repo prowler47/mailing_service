@@ -34,7 +34,7 @@ public class NotificationDao implements Dao<UUID, Notification> {
 
     @Override
     @Transactional
-    public void update(UUID updatedEntityId, Notification entityForUpdate) {
+    public Notification update(UUID updatedEntityId, Notification entityForUpdate) {
         Notification updatedEntity = getById(updatedEntityId);
         Session session = entityManager.unwrap(Session.class);
         updatedEntity.setUsername(entityForUpdate.getUsername());
@@ -45,6 +45,7 @@ public class NotificationDao implements Dao<UUID, Notification> {
         updatedEntity.setDate(parseDate);
         updatedEntity.setPayload(entityForUpdate.getPayload());
         session.merge(updatedEntity);
+        return updatedEntity;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ua.dragunovskiy.mailing_service.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +12,18 @@ public class Time {
         Date currentDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return simpleDateFormat.format(currentDate);
+    }
+
+    public String getCurrentTimePlusOneYear() {
+        Date currentDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String formattedCurrentDate = simpleDateFormat.format(currentDate);
+        String date = formattedCurrentDate.split(" ")[0];
+        String time = formattedCurrentDate.split(" ")[1];
+        Integer year = Integer.parseInt(date.split("-")[0]) + 1;
+        String result = year + "-" + date.split("-")[1] + "-" + date.split("-")[2] + " " + time;
+        System.out.println(result);
+        return result;
     }
 
     public boolean timeComparator(String currentTime, String notificationTime) {

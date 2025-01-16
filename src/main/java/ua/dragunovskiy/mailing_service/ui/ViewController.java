@@ -130,10 +130,13 @@ public class ViewController {
 
     @PostMapping("/addNotification")
     public String addNewNotification(@ModelAttribute("newNotification") Notification notification) {
-        notification.setDate(FromDatetimeLocalToStringParser.parse(notification.getDate()));
-//        notificationService.addNewNotification(notification);
-        notificationService.saveNewNotification(notification);
-        return "redirect:/view/done";
+        try {
+            notification.setDate(FromDatetimeLocalToStringParser.parse(notification.getDate()));
+            notificationService.saveNewNotification(notification);
+            return "redirect:/view/done";
+        } catch (UsernameFromCookieNotFound e) {
+            return "redirect:/view/home";
+        }
     }
 
     @GetMapping("/updateNotification/{id}")

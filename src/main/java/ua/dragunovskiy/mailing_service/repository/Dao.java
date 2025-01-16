@@ -10,7 +10,7 @@ public interface Dao<ID, E> {
 
     E save(E entity);
 
-    void update(ID updatedEntityId, E entityForUpdate);
+    E update(ID updatedEntityId, E entityForUpdate);
     List<E> getAll();
     E getById(ID id);
     void delete(ID id);

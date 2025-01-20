@@ -8,12 +8,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
-import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
-import ua.dragunovskiy.mailing_service.service.EncryptionService;
-import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
 import ua.dragunovskiy.mailing_service.util.FromDatetimeLocalToStringParser;
-import ua.dragunovskiy.mailing_service.util.Time;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +33,6 @@ public class NotificationDao implements Dao<UUID, Notification> {
         Notification updatedEntity = getById(updatedEntityId);
         Session session = entityManager.unwrap(Session.class);
         updatedEntity.setUsername(entityForUpdate.getUsername());
-        updatedEntity.setId(entityForUpdate.getId());
         updatedEntity.setTitle(entityForUpdate.getTitle());
         updatedEntity.setAddress(entityForUpdate.getAddress());
         String parseDate = FromDatetimeLocalToStringParser.parse(entityForUpdate.getDate());
@@ -79,7 +73,7 @@ public class NotificationDao implements Dao<UUID, Notification> {
 
     @Override
     @Transactional
-    public void delete(UUID id) {
+    public void delete(UUID id) throws IllegalArgumentException {
         Session session = entityManager.unwrap(Session.class);
         Notification notificationForDelete = session.get(Notification.class, id);
         session.remove(notificationForDelete);

@@ -54,7 +54,7 @@ public class SecurityConfig {
                                 .requestMatchers("/view/info").permitAll()
                                 .requestMatchers("/view/login").permitAll()
                                 .requestMatchers("/view/registration").permitAll()
-                                .requestMatchers("/admin").hasRole("ADMIN").anyRequest().permitAll())
+                                .requestMatchers("/notifications/").hasRole("ADMIN").anyRequest().permitAll())
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->

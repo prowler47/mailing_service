@@ -1,19 +1,24 @@
 package ua.dragunovskiy.mailing_service.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ua.dragunovskiy.mailing_service.dto.NotificationDto;
+import ua.dragunovskiy.mailing_service.exception.IncorrectUserIdException;
+import ua.dragunovskiy.mailing_service.mapper.NotificationDtoMapper;
 import ua.dragunovskiy.mailing_service.repository.Dao;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
+import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
 import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoWithIDMapper;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
 import ua.dragunovskiy.mailing_service.util.Time;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +27,7 @@ public class NotificationService {
     private final NotificationDtoWithIDMapper notificationDtoWithIDMapper;
     private final EncryptionService encryptionService;
     private final SimpleUserNameStorage userNameStorage;
+    private final NotificationDtoMapper notificationDtoMapper;
 
     public Notification saveNewNotification(Notification notification) {
             notification.setUsername(encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage()));
@@ -35,20 +41,18 @@ public class NotificationService {
             return notification;
     }
 
+    public NotificationDto save(Notification notification) {
+        Notification savedNotification = notificationDao.save(notification);
+        return notificationDtoMapper.map(savedNotification);
+    }
+
     public List<Notification> getAllNotifications() {
        return notificationDao.getAll();
     }
 
-//    public List<NotificationDtoWithID> getAllNotificationDtoWithIDByUsernameFromCookiesV2() {
-//        try {
-//            String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
-//            List<Notification> allNotifications = notificationDao.getAll();
-//            List<Notification> notificationsByUsername = allNotifications.stream().filter(notification -> notification.getUsername().equals(encodeUsername)).toList();
-//            return notificationsByUsername.stream().map(notificationDtoWithIDMapper::map).toList();
-//        } catch (NullPointerException e) {
-//            throw new UsernameFromCookieNotFound("Username is null");
-//        }
-//    }
+    public List<NotificationDto> getAllNotificationDto() {
+        return notificationDao.getAll().stream().map(notificationDtoMapper::map).collect(Collectors.toList());
+    }
 
     public List<NotificationDtoWithID> getAllNotificationDtoWithIDByUsernameFromCookiesV2() {
             String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
@@ -65,16 +69,42 @@ public class NotificationService {
         return notificationDao.getById(id);
     }
 
-    public Notification updateNotification(UUID updatedNotificationId, Notification notificationForUpdate) throws OverdueMessage {
+    public NotificationDto getNotificationDtoById(UUID id) {
+        Notification notificationById = notificationDao.getById(id);
+        if (notificationById == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return notificationDtoMapper.map(notificationById);
+    }
+
+    public Notification updateNotification(UUID updatedNotificationId, Notification notificationForUpdate) throws OverdueMessageException {
         Notification updatedEntity = notificationDao.getById(updatedNotificationId);
-        if (Time.timeComparatorV2(Time.getCurrentTime(), updatedEntity.getDate())) {
+        if (Time.timeComparatorV3(Time.getCurrentTime(), updatedEntity.getDate())) {
             System.out.println("message already send");
             System.out.println(Time.getCurrentTime() + " - " + updatedEntity.getDate());
-            throw new OverdueMessage("This message is already send");
+            throw new OverdueMessageException("This message is already send");
         }
         return notificationDao.update(updatedNotificationId, notificationForUpdate);
     }
-    public void deleteNotification(UUID id) {
-        notificationDao.delete(id);
+
+    public NotificationDto update(UUID updatedNotificationId, Notification notificationForUpdate) throws OverdueMessageException {
+        Notification updatedEntity = notificationDao.getById(updatedNotificationId);
+        if (updatedEntity == null) {
+            throw new IncorrectUserIdException("Incorrect id for updated notification");
+        }
+        if (Time.timeComparatorV3(Time.getCurrentTime(), updatedEntity.getDate())) {
+            System.out.println("message already send");
+            System.out.println(Time.getCurrentTime() + " - " + updatedEntity.getDate());
+            throw new OverdueMessageException("This message is already send");
+        }
+        Notification updatedNotification = notificationDao.update(updatedNotificationId, notificationForUpdate);
+        return notificationDtoMapper.map(updatedNotification);
+    }
+    public void deleteNotification(UUID id)  {
+        try {
+            notificationDao.delete(id);
+        } catch (IllegalArgumentException e) {
+            throw new IncorrectUserIdException("Incorrect user id");
+        }
     }
 }

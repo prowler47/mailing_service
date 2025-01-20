@@ -4,6 +4,8 @@ import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @UtilityClass
@@ -54,17 +56,15 @@ public class Time {
         String notificationHours = notificationTime.split(":")[0].split(" ")[1];
         String notificationMinutes = notificationTime.split(":")[1];
 
-       if (Integer.parseInt(notificationYear) < Integer.parseInt(currentYear)) {
-           return true;
-       }
-
-       if (Integer.parseInt(notificationMonth) < Integer.parseInt(currentMonth)) {
-           return true;
-       }
-
-       if (Integer.parseInt(notificationDate) < Integer.parseInt(currentDate)) {
-           return true;
-       }
+        if (Integer.parseInt(notificationYear) < Integer.parseInt(currentYear)) {
+            return true;
+        }
+        if (Integer.parseInt(notificationMonth) < Integer.parseInt(currentMonth)) {
+            return true;
+        }
+        if (Integer.parseInt(notificationDate) < Integer.parseInt(currentDate)) {
+            return true;
+        }
 
         if (Integer.parseInt(currentHours) == Integer.parseInt(notificationHours)) {
             return Integer.parseInt(currentMinutes) > Integer.parseInt(notificationMinutes) + 2;
@@ -73,5 +73,12 @@ public class Time {
             return Integer.parseInt(currentMinutes) >= 2;
         }
         return false;
+    }
+
+    public boolean timeComparatorV3(String currentTime, String notificationTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime currentDateTime = LocalDateTime.parse(currentTime, formatter);
+        LocalDateTime notificationDateTime = LocalDateTime.parse(notificationTime, formatter);
+        return notificationDateTime.isBefore(currentDateTime.plusMinutes(2));
     }
 }

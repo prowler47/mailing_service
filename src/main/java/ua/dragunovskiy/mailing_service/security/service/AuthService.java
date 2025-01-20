@@ -48,5 +48,4 @@ public class AuthService {
         UserEntity user = userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername(), user.getPassword()));
     }
-
 }

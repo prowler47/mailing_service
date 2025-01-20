@@ -24,6 +24,17 @@ public class NotificationTestUtil {
                 .build();
     }
 
+    public Notification createTestNotificationForRegisteredUser() {
+        return  Notification.builder()
+                .id(testId)
+                .address("toma@gmail.com")
+                .date(Time.getCurrentTimePlusOneYear())
+                .username("toma")
+                .title(testTitle)
+                .payload("test payload")
+                .build();
+    }
+
     public Notification createTestNotificationWithOverdueDate() {
         return  Notification.builder()
                 .id(testId)

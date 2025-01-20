@@ -3,18 +3,14 @@ package ua.dragunovskiy.mailing_service.ui;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.Banner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.servlet.ModelAndView;
-import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
+import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
 import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.security.dto.JwtRequestDto;
 import ua.dragunovskiy.mailing_service.security.dto.RegistrationUserDto;
@@ -90,8 +86,27 @@ public class ViewController {
             return "redirect:/view/emailAlreadyExist";
         }
         System.out.println(user.getUsername());
+        System.out.println(response.getStatusCode());
         return "redirect:/view/registrationSuccess";
     }
+
+//        @PostMapping("/registerUser")
+//    public ResponseEntity<?> userRegistration(@ModelAttribute("newUser") RegistrationUserDto user) {
+//        ResponseEntity<?> response = authService.createNewUser(user);
+//        if (response.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+//            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/view/userAlreadyExist")).build();
+//        }
+//        if (response.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+//            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/view/passwordNotMatch")).build();
+//        }
+//        if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {
+//            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/view/emailAlreadyExist")).build();
+//        }
+//        System.out.println(user.getUsername());
+//        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/view/registrationSuccess")).build();
+//    }
+
+
 
     @GetMapping("/login")
     public String userLogin(Model model) {
@@ -151,7 +166,7 @@ public class ViewController {
         try {
             notificationService.updateNotification(notificationForUpdate.getId(), notificationForUpdate);
             return "redirect:/view/getAllNotificationsByUsername";
-        } catch (OverdueMessage e) {
+        } catch (OverdueMessageException e) {
             return "redirect:/view/overdueMessage";
         }
     }

@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.exception.OverdueMessage;
+import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
 import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoWithIDMapper;
 import ua.dragunovskiy.mailing_service.repository.NotificationDao;
@@ -87,7 +87,7 @@ public class NotificationServiceTest {
         Notification notificationForUpdate = NotificationTestUtil.createTestNotificationForUpdateNotificationTest();
         BDDMockito.given(notificationDao.getById(any(UUID.class))).willReturn(notificationToUpdate);
         //when
-        assertThrows(OverdueMessage.class, () -> serviceUnderTest.updateNotification(notificationForUpdate.getId(), notificationForUpdate));
+        assertThrows(OverdueMessageException.class, () -> serviceUnderTest.updateNotification(notificationForUpdate.getId(), notificationForUpdate));
         //then
         verify(notificationDao, never()).update(any(UUID.class), any(Notification.class));
     }

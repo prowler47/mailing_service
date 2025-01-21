@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/api/v1/notifications")
 @AllArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
@@ -30,12 +30,12 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getAllNotifications());
     }
 
-    @GetMapping("/getAllNotificationDto")
+    @GetMapping("/notifications")
     public ResponseEntity<?> getAllNotificationDto() {
         return ResponseEntity.ok(notificationService.getAllNotificationDto());
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/notifications/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") UUID id) {
         try {
             return ResponseEntity.ok(notificationService.getNotificationDtoById(id));
@@ -48,12 +48,12 @@ public class NotificationController {
         }
     }
 
-    @PostMapping("/saveNotification")
+    @PostMapping("/notifications")
     public ResponseEntity<?> saveNotification(@RequestBody Notification notification) {
       return ResponseEntity.ok(notificationService.save(notification));
     }
 
-    @PutMapping("/updateNotification/{id}")
+    @PutMapping("/notifications/{id}")
     public ResponseEntity<?> updateNotification(@PathVariable("id") UUID id, @RequestBody Notification notification) {
         try {
             return ResponseEntity.ok(notificationService.update(id, notification));
@@ -71,7 +71,7 @@ public class NotificationController {
             filterNotifications.filterForDelete();
     }
 
-    @DeleteMapping("/deleteNotification/{id}")
+    @DeleteMapping("/notifications/{id}")
     public ResponseEntity<?> deleteNotification(@PathVariable("id") UUID id) {
         try {
             notificationService.deleteNotification(id);

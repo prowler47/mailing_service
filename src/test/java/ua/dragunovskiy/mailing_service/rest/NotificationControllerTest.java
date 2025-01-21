@@ -70,7 +70,7 @@ public class NotificationControllerTest {
         NotificationDto dto = NotificationDtoTestUtil.createNotificationDto();
         BDDMockito.given(notificationService.save(any(Notification.class))).willReturn(dto);
         //when
-        ResultActions result = mockMvc.perform(post("/notifications/saveNotification")
+        ResultActions result = mockMvc.perform(post("/api/v1/notifications/notifications")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)));
@@ -92,7 +92,7 @@ public class NotificationControllerTest {
         List<NotificationDto> listOfNotificationDto = NotificationDtoTestUtil.createListOfNotificationDto();
         BDDMockito.given(notificationService.getAllNotificationDto()).willReturn(listOfNotificationDto);
         //when
-        ResultActions result = mockMvc.perform(get("/notifications/getAllNotificationDto")
+        ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(listOfNotificationDto)));
@@ -110,7 +110,7 @@ public class NotificationControllerTest {
         NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
         BDDMockito.given(notificationService.getNotificationDtoById(any(UUID.class))).willReturn(notificationDto);
         //when
-        ResultActions result = mockMvc.perform(get("/notifications/getById/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(notificationDto)));
@@ -132,7 +132,7 @@ public class NotificationControllerTest {
         BDDMockito.given(notificationService.getNotificationDtoById(any(UUID.class)))
                 .willThrow(new IncorrectNotificationIdException("Notification with given id is not exist"));
         //when
-        ResultActions result = mockMvc.perform(get("/notifications/getById/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(notificationDto)));
@@ -153,7 +153,7 @@ public class NotificationControllerTest {
         NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
         BDDMockito.given(notificationService.update(any(UUID.class), any(Notification.class))).willReturn(notificationDto);
         //when
-        ResultActions result = mockMvc.perform(put("/notifications/updateNotification/" + notificationToUpdate.getId())
+        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + notificationToUpdate.getId())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(notificationDto)));
@@ -174,7 +174,7 @@ public class NotificationControllerTest {
         BDDMockito.given(notificationService.update(any(UUID.class), any(Notification.class)))
                 .willThrow(new IncorrectNotificationIdException("Incorrect id for updated notification"));
         //when
-        ResultActions result = mockMvc.perform(put("/notifications/updateNotification/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(notificationDto)));
@@ -195,7 +195,7 @@ public class NotificationControllerTest {
         BDDMockito.given(notificationService.update(any(UUID.class), any(Notification.class)))
                 .willThrow(new OverdueMessageException("This message is already send"));
         //when
-        ResultActions result = mockMvc.perform(put("/notifications/updateNotification/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(notificationDto)));
@@ -214,7 +214,7 @@ public class NotificationControllerTest {
         //given
         BDDMockito.doNothing().when(notificationService).deleteNotification(any(UUID.class));
         //when
-        ResultActions result = mockMvc.perform(delete("/notifications/deleteNotification/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(delete("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
         //then
@@ -231,7 +231,7 @@ public class NotificationControllerTest {
        BDDMockito.willThrow(new IncorrectNotificationIdException("Incorrect notification id"))
                .given(notificationService).deleteNotification(any(UUID.class));
         //when
-        ResultActions result = mockMvc.perform(delete("/notifications/deleteNotification/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(delete("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON));
         //then

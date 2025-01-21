@@ -1,10 +1,10 @@
 package ua.dragunovskiy.mailing_service.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
+import ua.dragunovskiy.mailing_service.exception.IncorrectNotificationIdException;
 import ua.dragunovskiy.mailing_service.exception.IncorrectUserIdException;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoMapper;
 import ua.dragunovskiy.mailing_service.repository.Dao;
@@ -72,7 +72,7 @@ public class NotificationService {
     public NotificationDto getNotificationDtoById(UUID id) {
         Notification notificationById = notificationDao.getById(id);
         if (notificationById == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new IncorrectNotificationIdException("Notification with given id is not exist");
         }
         return notificationDtoMapper.map(notificationById);
     }
@@ -90,7 +90,7 @@ public class NotificationService {
     public NotificationDto update(UUID updatedNotificationId, Notification notificationForUpdate) throws OverdueMessageException {
         Notification updatedEntity = notificationDao.getById(updatedNotificationId);
         if (updatedEntity == null) {
-            throw new IncorrectUserIdException("Incorrect id for updated notification");
+            throw new IncorrectNotificationIdException("Incorrect id for updated notification");
         }
         if (Time.timeComparatorV3(Time.getCurrentTime(), updatedEntity.getDate())) {
             System.out.println("message already send");
@@ -100,11 +100,11 @@ public class NotificationService {
         Notification updatedNotification = notificationDao.update(updatedNotificationId, notificationForUpdate);
         return notificationDtoMapper.map(updatedNotification);
     }
-    public void deleteNotification(UUID id)  {
+    public void deleteNotification(UUID id) {
         try {
             notificationDao.delete(id);
         } catch (IllegalArgumentException e) {
-            throw new IncorrectUserIdException("Incorrect user id");
+            throw new IncorrectNotificationIdException("Incorrect notification id");
         }
     }
 }

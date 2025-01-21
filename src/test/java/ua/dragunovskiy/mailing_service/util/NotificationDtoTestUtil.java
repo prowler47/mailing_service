@@ -14,7 +14,7 @@ public class NotificationDtoTestUtil {
                 .address("test address")
                 .title("test title")
                 .payload("test payload")
-                .date(Time.getCurrentTimePlusOneYear())
+                .date(Time.getCurrentTime())
                 .build();
     }
 

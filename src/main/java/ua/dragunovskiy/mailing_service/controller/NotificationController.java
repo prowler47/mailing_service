@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.dto.ErrorDto;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.exception.IncorrectNotificationIdException;
 import ua.dragunovskiy.mailing_service.exception.IncorrectUserIdException;
 import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
 import ua.dragunovskiy.mailing_service.repository.NotificationDao;
@@ -38,7 +39,7 @@ public class NotificationController {
     public ResponseEntity<?> getById(@PathVariable("id") UUID id) {
         try {
             return ResponseEntity.ok(notificationService.getNotificationDtoById(id));
-        } catch (UsernameNotFoundException e) {
+        } catch (IncorrectNotificationIdException e) {
             return ResponseEntity.badRequest()
                     .body(ErrorDto.builder()
                             .status(404)
@@ -56,7 +57,7 @@ public class NotificationController {
     public ResponseEntity<?> updateNotification(@PathVariable("id") UUID id, @RequestBody Notification notification) {
         try {
             return ResponseEntity.ok(notificationService.update(id, notification));
-        } catch (OverdueMessageException | IncorrectUserIdException e) {
+        } catch (OverdueMessageException | IncorrectNotificationIdException e) {
             return ResponseEntity.badRequest()
                     .body(ErrorDto.builder()
                             .status(400)
@@ -75,7 +76,7 @@ public class NotificationController {
         try {
             notificationService.deleteNotification(id);
             return ResponseEntity.ok().build();
-        } catch (IncorrectUserIdException e) {
+        } catch (IncorrectNotificationIdException e) {
             return ResponseEntity.badRequest().body(
                     ErrorDto.builder()
                             .status(404)

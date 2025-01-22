@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/mailing_service_testing
+    username: postgres
+    password: 1111
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: sdragunovskiy@gmail.com
+    password: mpju pcjy nltk ffst
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: 0fyvzbxwk3fk725h8hmrjr0ycynfdw8nd8gdwnwi2qjmuu4zp9j96wr8x5jifed4rxf4nc
+  lifetime: 30m
+
+#  main:
+#      allow-circular-references: true

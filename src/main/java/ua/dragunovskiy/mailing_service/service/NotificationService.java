@@ -72,7 +72,7 @@ public class NotificationService {
     public NotificationDto getNotificationDtoById(UUID id) {
         Notification notificationById = notificationDao.getById(id);
         if (notificationById == null) {
-            throw new IncorrectNotificationIdException("Notification with given id is not exist");
+            throw new IncorrectNotificationIdException("Notification with given id is not exists");
         }
         return notificationDtoMapper.map(notificationById);
     }

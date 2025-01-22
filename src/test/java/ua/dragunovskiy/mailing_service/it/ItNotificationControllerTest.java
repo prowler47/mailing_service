@@ -1,30 +1,22 @@
-package ua.dragunovskiy.mailing_service.rest;
+package ua.dragunovskiy.mailing_service.it;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.entity.Notification;
-import ua.dragunovskiy.mailing_service.exception.IncorrectNotificationIdException;
-import ua.dragunovskiy.mailing_service.exception.IncorrectUserIdException;
-import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
-import ua.dragunovskiy.mailing_service.security.service.AuthService;
-import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
-import ua.dragunovskiy.mailing_service.security.util.JwtTokenUtil;
-import ua.dragunovskiy.mailing_service.service.NotificationService;
-import ua.dragunovskiy.mailing_service.timemechanism.check.SimpleCheckNotifications;
-import ua.dragunovskiy.mailing_service.timemechanism.filter.SimpleFilterNotifications;
+import ua.dragunovskiy.mailing_service.repository.NotificationDao;
 import ua.dragunovskiy.mailing_service.util.NotificationDtoTestUtil;
 import ua.dragunovskiy.mailing_service.util.NotificationTestUtil;
 import ua.dragunovskiy.mailing_service.util.Time;
@@ -33,69 +25,64 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-
-@WebMvcTest
-public class NotificationControllerTest {
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class ItNotificationControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @MockBean
-    private SimpleCheckNotifications simpleCheckNotifications;
-    @MockBean
-    private SimpleFilterNotifications simpleFilterNotifications;
-    @MockBean
-    private JwtTokenUtil jwtTokenUtil;
-    @MockBean
-    private AuthService authService;
-    @MockBean
-    private SimpleUserNameStorage simpleUserNameStorage;
-    @MockBean
-    private NotificationService notificationService;
+    @Autowired
+    private NotificationDao notificationDao;
+
+    @BeforeEach
+    public void setUp() {
+        notificationDao.deleteAll();
+    }
 
     @Test
     @DisplayName("Test save notification functionality")
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void givenNotificationDto_whenSave_thenResponseSuccess() throws Exception {
         //give
-        NotificationDto dto = NotificationDtoTestUtil.createNotificationDto();
-        BDDMockito.given(notificationService.save(any(Notification.class))).willReturn(dto);
+        Notification notification = NotificationTestUtil.createTestNotification();
+        notificationDao.save(notification);
+        Notification obtainedNotification = notificationDao.getByTitle("Title for testing mailing service");
+
         //when
         ResultActions result = mockMvc.perform(post("/api/v1/notifications/notifications")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)));
+                .content(objectMapper.writeValueAsString(obtainedNotification)));
         //then
         result
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.title", is("test title")))
-                .andExpect(jsonPath("$.address", is("test address")))
-                .andExpect(jsonPath("$.date", is(Time.getCurrentTime())))
+                .andExpect(jsonPath("$.title", is("Title for testing mailing service")))
+                .andExpect(jsonPath("$.address", is("max@mail.com")))
+                .andExpect(jsonPath("$.date", is(Time.getCurrentTimePlusOneYear())))
                 .andExpect(jsonPath("$.payload", is("test payload")));
     }
 
     @Test
     @DisplayName("Test getAllNotificationDto functionality")
     @WithMockUser(username = "admin", roles = "ADMIN")
-    public void givenListOfNotificationDto_whenGetAllNotificationDto_thenResponseSuccess() throws Exception {
+    public void givenListOfNotification_whenGetAllNotification_thenResponseSuccess() throws Exception {
         //give
-        List<NotificationDto> listOfNotificationDto = NotificationDtoTestUtil.createListOfNotificationDto();
-        BDDMockito.given(notificationService.getAllNotificationDto()).willReturn(listOfNotificationDto);
+        List<Notification> listOfNotifications = NotificationTestUtil.createListOfTestNotifications();
+        for (Notification notification : listOfNotifications) {
+            notificationDao.save(notification);
+        }
         //when
         ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(listOfNotificationDto)));
+                .content(objectMapper.writeValueAsString(listOfNotifications)));
         //then
         result
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -107,18 +94,20 @@ public class NotificationControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void givenNotificationId_whenGetNotificationDtoById_thenResponseSuccess() throws Exception {
         //given
-        NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
-        BDDMockito.given(notificationService.getNotificationDtoById(any(UUID.class))).willReturn(notificationDto);
+        Notification notification = NotificationTestUtil.createTestNotification();
+        notification.setDate(Time.getCurrentTime());
+        notificationDao.save(notification);
+        Notification obtainedNotification = notificationDao.getByTitle("Title for testing mailing service");
         //when
-        ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications/" + obtainedNotification.getId())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(notificationDto)));
+                .content(objectMapper.writeValueAsString(notification)));
         //then
         result
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.title", is("test title")))
-                .andExpect(jsonPath("$.address", is("test address")))
+                .andExpect(jsonPath("$.title", is("Title for testing mailing service")))
+                .andExpect(jsonPath("$.address", is("max@mail.com")))
                 .andExpect(jsonPath("$.date", is(Time.getCurrentTime())))
                 .andExpect(jsonPath("$.payload", is("test payload")));
     }
@@ -129,8 +118,6 @@ public class NotificationControllerTest {
     public void givenIncorrectNotificationId_whenGetNotificationById_thenResponseError() throws Exception {
         //given
         NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
-        BDDMockito.given(notificationService.getNotificationDtoById(any(UUID.class)))
-                .willThrow(new IncorrectNotificationIdException("Notification with given id is not exists"));
         //when
         ResultActions result = mockMvc.perform(get("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
@@ -149,19 +136,23 @@ public class NotificationControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void givenNotification_whenUpdateNotification_thenResponseSuccess() throws Exception {
         //give
+        String updatedEmail = "updated@email.com";
         Notification notificationToUpdate = NotificationTestUtil.createTestNotification();
-        NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
-        BDDMockito.given(notificationService.update(any(UUID.class), any(Notification.class))).willReturn(notificationDto);
+        notificationDao.save(notificationToUpdate);
+        Notification obtainedNotification = notificationDao.getByTitle("Title for testing mailing service");
+        Notification notificationForUpdate = NotificationTestUtil.createTestNotification();
+        notificationForUpdate.setDate(Time.getCurrentTime());
+        notificationForUpdate.setAddress(updatedEmail);
         //when
-        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + notificationToUpdate.getId())
+        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + obtainedNotification.getId())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(notificationDto)));
+                .content(objectMapper.writeValueAsString(notificationForUpdate)));
         //then
         result
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(jsonPath("$.title", is("test title")))
-                .andExpect(jsonPath("$.address", is("test address")))
+                .andExpect(jsonPath("$.title", is("Title for testing mailing service")))
+                .andExpect(jsonPath("$.address", is("updated@email.com")))
                 .andExpect(jsonPath("$.date", is(Time.getCurrentTime())))
                 .andExpect(jsonPath("$.payload", is("test payload")));
     }
@@ -171,8 +162,6 @@ public class NotificationControllerTest {
     public void givenIncorrectIdForUpdatedNotification_whenUpdate_thenResponseError() throws Exception {
         //give
         NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
-        BDDMockito.given(notificationService.update(any(UUID.class), any(Notification.class)))
-                .willThrow(new IncorrectNotificationIdException("Incorrect id for updated notification"));
         //when
         ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())
@@ -191,14 +180,16 @@ public class NotificationControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void givenNotificationWithOverdueDate_whenUpdate_thenResponseError() throws Exception {
         //given
-        NotificationDto notificationDto = NotificationDtoTestUtil.createNotificationDto();
-        BDDMockito.given(notificationService.update(any(UUID.class), any(Notification.class)))
-                .willThrow(new OverdueMessageException("This message is already send"));
+        Notification notificationToUpdate = NotificationTestUtil.createTestNotification();
+        notificationToUpdate.setDate("2020-01-15 11:26");
+        notificationDao.save(notificationToUpdate);
+        Notification obtainedNotification = notificationDao.getByTitle("Title for testing mailing service");
+        Notification notificationForUpdate = NotificationTestUtil.createTestNotification();
         //when
-        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(put("/api/v1/notifications/notifications/" + obtainedNotification.getId())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(notificationDto)));
+                .content(objectMapper.writeValueAsString(notificationForUpdate)));
         //then
         result
                 .andDo(MockMvcResultHandlers.print())
@@ -212,13 +203,15 @@ public class NotificationControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void givenNotificationId_whenDeleteNotification_thenResponseSuccess() throws Exception {
         //given
-        BDDMockito.doNothing().when(notificationService).deleteNotification(any(UUID.class));
+        Notification notification = NotificationTestUtil.createTestNotification();
+        notificationDao.save(notification);
+        Notification obtainedNotification = notificationDao.getByTitle("Title for testing mailing service");
         //when
-        ResultActions result = mockMvc.perform(delete("/api/v1/notifications/notifications/" + UUID.randomUUID())
+        ResultActions result = mockMvc.perform(delete("/api/v1/notifications/notifications/" + obtainedNotification.getId())
                 .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(obtainedNotification)));
         //then
-        verify(notificationService, times(1)).deleteNotification(any(UUID.class));
         result
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -228,8 +221,6 @@ public class NotificationControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void givenIncorrectNotificationId_whenDeleteNotification_thenResponseError() throws Exception {
         //give
-       BDDMockito.willThrow(new IncorrectNotificationIdException("Incorrect notification id"))
-               .given(notificationService).deleteNotification(any(UUID.class));
         //when
         ResultActions result = mockMvc.perform(delete("/api/v1/notifications/notifications/" + UUID.randomUUID())
                 .with(csrf())

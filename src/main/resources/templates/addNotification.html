@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Send new notification</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+<header>
+    <div class="navigate_bar">
+        <a href="/view/successLoginHome">Home</a>
+        <a href="/view/getAllNotificationsByUsername">All notifications</a>
+        <a href="#">Info</a>
+        <a href="#">Contacts</a>
+        <a href="/view/logout">Logout</a>
+    </div>
+</header>
+<div class="container">
+    <div class="form">
+<form class="common_form" th:object="${newNotification}" th:action="@{/view/addNotification}" method="post">
+<!--    <input type="hidden" th:field="*{id}" />-->
+    <p>ENTER YOUR MESSAGE:</p>
+        <div>
+            <input type="text" id="address" th:field="${newNotification.address}" placeholder="email*" required/>
+        </div>
+        <div>
+<!--            <label for="title">title:</label>-->
+            <input type="text" id="title" th:field="${newNotification.title}" placeholder="title*" required/>
+        </div>
+        <div>
+<!--            <label for="payload">message:</label>-->
+            <textarea type="text" id="payload" th:field="${newNotification.payload}" placeholder="message*" required></textarea>
+        </div>
+        <div>
+<!--            <label for="date">date:</label>-->
+            <input type="datetime-local" id="date" th:field="${newNotification.date}" required/>
+        </div>
+    <br>
+    <button class="common_button" type="submit">add notification</button>
+</form>
+    </div>
+</div>
+</body>
+</html>

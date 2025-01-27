@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration page</title>
+   <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+<header>
+  <div class="navigate_bar">
+    <a href="#">Info</a>
+    <a href="#">Contacts</a>
+    <a href="/view/login">Login</a>
+  </div>
+</header>
+<div class="container">
+  <form class="common_form" th:object="${newUser}" th:action="@{/view/registerUser}" method="post">
+    <p>REGISTRATION:</p>
+    <div>
+      <input type="text" id="name" th:field="*{username}" placeholder="login*" required/>
+    </div>
+    <div>
+      <input type="text" id="password" th:field="*{password}" placeholder="password*" required/>
+    </div>
+    <div>
+      <input type="text" id="password_again" th:field="*{confirmPassword}" placeholder="enter password*" required/>
+    </div>
+    <div>
+      <input type="text" id="email" th:field="*{email}" placeholder="email*" required/>
+    </div>
+    <br>
+    <button class="common_button" type="submit">register</button>
+  </form>
+</div>
+</body>
+</html>

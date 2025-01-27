@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications by username:</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+<header>
+    <div class="navigate_bar">
+        <a href="/view/successLoginHome">Home</a>
+        <a href="#">Info</a>
+        <a href="#">Contacts</a>
+        <a href="/view/logout">Logout</a>
+    </div>
+</header>
+<div class="list_of_notifications_container">
+<h1>Notifications</h1>
+    <table th:each="notification : ${notifications}">
+        <thead>
+        <tr>
+            <th>email</th>
+            <th>title</th>
+            <th>date</th>
+            <th>message</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <div class="address_container">
+                    <span th:text="${notification.address}"></span>
+                </div>
+            </td>
+            <td>
+                <div class="title_container">
+                    <span th:text="${notification.title}"></span>
+                </div>
+            </td>
+            <td>
+                <div class="date_container">
+                    <span th:text="${notification.date}"></span>
+                </div>
+            </td>
+            <td>
+                <div class="message_container">
+                    <span th:text="${notification.payload}"></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form class="delete_notification_from_ui" th:action="@{/view/deleteNotification}" method="post">
+                    <input type="hidden" name="id" th:value="${notification.id}" />
+                    <button class="delete_or_update_notification_button" type="submit" value="Delete">Delete</button>
+                    <a class="update_notification_link" th:href="@{/view/updateNotification/{id}(id=${notification.id})}">Update</a>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        <br><br>
+    </table>
+</div>
+</body>
+</html>

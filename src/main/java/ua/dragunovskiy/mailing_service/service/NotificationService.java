@@ -1,17 +1,15 @@
 package ua.dragunovskiy.mailing_service.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ua.dragunovskiy.mailing_service.dto.NotificationDto;
 import ua.dragunovskiy.mailing_service.exception.IncorrectNotificationIdException;
-import ua.dragunovskiy.mailing_service.exception.IncorrectUserIdException;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoMapper;
 import ua.dragunovskiy.mailing_service.repository.Dao;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
-import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFoundException;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoWithIDMapper;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
 import ua.dragunovskiy.mailing_service.util.Time;
@@ -31,10 +29,11 @@ public class NotificationService {
 
     public Notification saveNewNotification(Notification notification) {
             notification.setUsername(encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage()));
-            notification.setPayload(notification.getPayload() + "\n - from " + userNameStorage.getUsernameFromStorage());
+            notification.setPayload(notification.getPayload() + "\n - from " + userNameStorage.getUsernameFromStorage()
+            + "\n *this is test message from Mailing service project version 1.0.0 by sdragunovskiy");
             String username = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
             if (username == null) {
-                throw new UsernameFromCookieNotFound("Username is null");
+                throw new UsernameFromCookieNotFoundException("Username is null");
             }
             System.out.println(username);
             notificationDao.save(notification);
@@ -57,7 +56,7 @@ public class NotificationService {
     public List<NotificationDtoWithID> getAllNotificationDtoWithIDByUsernameFromCookiesV2() {
             String encodeUsername = encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage());
             if (encodeUsername == null) {
-                throw new UsernameFromCookieNotFound("Username is null");
+                throw new UsernameFromCookieNotFoundException("Username is null");
             }
             System.out.println(encodeUsername);
             List<Notification> allNotifications = notificationDao.getAll();

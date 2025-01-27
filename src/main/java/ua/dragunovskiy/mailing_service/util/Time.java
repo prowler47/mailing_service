@@ -42,6 +42,7 @@ public class Time {
         return false;
     }
 
+    @Deprecated
     public boolean timeComparatorV2(String currentTime, String notificationTime) {
         String currentYear = currentTime.split(" ")[0].split("-")[0];
         String currentMonth = currentTime.split(" ")[0].split("-")[1];

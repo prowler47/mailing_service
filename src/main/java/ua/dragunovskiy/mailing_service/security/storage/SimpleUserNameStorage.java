@@ -1,7 +1,6 @@
 package ua.dragunovskiy.mailing_service.security.storage;
 
 import org.springframework.stereotype.Component;
-import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
 
 import java.util.*;
 

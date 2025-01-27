@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
 import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
-import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFoundException;
 import ua.dragunovskiy.mailing_service.mapper.NotificationDtoWithIDMapper;
 import ua.dragunovskiy.mailing_service.repository.NotificationDao;
 import ua.dragunovskiy.mailing_service.security.storage.SimpleUserNameStorage;
@@ -59,7 +59,7 @@ public class NotificationServiceTest {
         Notification notificationToSave = NotificationTestUtil.createTestNotification();
         BDDMockito.given(encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage())).willReturn(null);
         //when
-        assertThrows(UsernameFromCookieNotFound.class, () -> serviceUnderTest.saveNewNotification(notificationToSave));
+        assertThrows(UsernameFromCookieNotFoundException.class, () -> serviceUnderTest.saveNewNotification(notificationToSave));
         //then
         verify(notificationDao, never()).save(any(Notification.class));
     }
@@ -114,7 +114,7 @@ public class NotificationServiceTest {
         BDDMockito.given(userNameStorage.getUsernameFromStorage()).willReturn(null);
         BDDMockito.given(encryptionService.encodeUsername(userNameStorage.getUsernameFromStorage())).willReturn(null);
         //when
-        assertThrows(UsernameFromCookieNotFound.class, () -> serviceUnderTest.getAllNotificationDtoWithIDByUsernameFromCookiesV2());
+        assertThrows(UsernameFromCookieNotFoundException.class, () -> serviceUnderTest.getAllNotificationDtoWithIDByUsernameFromCookiesV2());
         //then
         verify(notificationDao, never()).getAll();
         verify(notificationDtoWithIDMapper, never()).map(any(Notification.class));

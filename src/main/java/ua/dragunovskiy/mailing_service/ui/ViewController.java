@@ -10,8 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.dragunovskiy.mailing_service.dto.NotificationDtoWithID;
 import ua.dragunovskiy.mailing_service.entity.Notification;
+import ua.dragunovskiy.mailing_service.exception.IncorrectNotificationIdException;
 import ua.dragunovskiy.mailing_service.exception.OverdueMessageException;
-import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFound;
+import ua.dragunovskiy.mailing_service.exception.UsernameFromCookieNotFoundException;
 import ua.dragunovskiy.mailing_service.security.dto.JwtRequestDto;
 import ua.dragunovskiy.mailing_service.security.dto.RegistrationUserDto;
 import ua.dragunovskiy.mailing_service.security.service.AuthService;
@@ -149,7 +150,7 @@ public class ViewController {
             notification.setDate(FromDatetimeLocalToStringParser.parse(notification.getDate()));
             notificationService.saveNewNotification(notification);
             return "redirect:/view/done";
-        } catch (UsernameFromCookieNotFound e) {
+        } catch (UsernameFromCookieNotFoundException e) {
             return "redirect:/view/home";
         }
     }
@@ -193,7 +194,7 @@ public class ViewController {
             List<NotificationDtoWithID> notifications = notificationService.getAllNotificationDtoWithIDByUsernameFromCookiesV2();
             model.addAttribute("notifications", notifications);
             return "notificationsByUsername";
-        } catch (UsernameFromCookieNotFound e) {
+        } catch (UsernameFromCookieNotFoundException e) {
             System.out.println(e.getMessage());
             return "redirect:/view/home";
         }
@@ -202,7 +203,11 @@ public class ViewController {
 
     @PostMapping("/deleteNotification")
     public String deleteNotification(@RequestParam UUID id) {
-        notificationService.deleteNotification(id);
+        try {
+            notificationService.deleteNotification(id);
+        } catch (IncorrectNotificationIdException e) {
+            return "incorrect_notification_id";
+        }
         return "redirect:/view/getAllNotificationsByUsername";
     }
 }

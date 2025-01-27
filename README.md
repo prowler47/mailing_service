@@ -1,4 +1,4 @@
-## This is service for sending planned messages for clients by email. You should register/login yourself and after add/select/edit/delete messages to send to your clients will be available.  You don't need to press the button to send a message. Just enter year, month, day, hours and minutes when message should be send and service will do it automatically.
+This is service for sending planned messages for clients by email. You should register/login yourself and after add/select/edit/delete messages to send to your clients will be available.  You don't need to press the button to send a message. Just enter year, month, day, hours and minutes when message should be send and service will do it automatically.
 
 # Documentation for Mailing service:
 ***
